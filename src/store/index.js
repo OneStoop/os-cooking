@@ -108,10 +108,15 @@ const store = new Vuex.Store({
       console.log("refreshToken")
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-          firebase.auth().currentUser.getIdToken(/* forceRefresh */ false).then(function (idToken) {
-            commit('setToken', idToken)
-          }).catch(function () {
+          user.getIdToken(true).then(function(accessToken) {
+            commit('setToken', accessToken)
           })
+          //console.log(user)
+          //firebase.auth().currentUser.getIdToken(/* forceRefresh */ false).then(function (idToken) {
+          //  commit('setToken', idToken)
+          //}).catch(function () {
+          //  console.log('some refresh error')
+          //})
         }
       })
     },

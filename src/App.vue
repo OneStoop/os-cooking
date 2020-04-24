@@ -133,7 +133,8 @@ export default {
   },
   mounted () {
     let vm = this
-    setTimeout(function () { vm.autoRefreshToken() }, 300000)
+    // setTimeout(function () { vm.autoRefreshToken() }, 300000)
+    setTimeout(function () { vm.autoRefreshToken() }, 3300000)
   },
   watch: {
   }

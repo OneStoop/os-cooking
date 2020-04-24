@@ -175,6 +175,9 @@ export default {
     }
   },
   methods: {
+    autoRefreshToken () {
+      this.$store.dispatch('refreshToken')
+    }
   },
   computed: {
     isOwner: function () {
@@ -187,7 +190,8 @@ export default {
   },
   mounted () {
     let vm = this
-    setTimeout(function () { vm.$store.dispatch('refreshToken') }, 300000)
+    this.autoRefreshToken()
+    setTimeout(function () { vm.$store.dispatch('refreshToken') }, 3300000)
     this.$store.dispatch('getRecipe', this.$route.query.id)
   },
   beforeDestroy: function () {

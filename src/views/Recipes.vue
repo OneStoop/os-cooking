@@ -74,6 +74,9 @@ export default {
     }
   },
   methods: {
+    autoRefreshToken () {
+      this.$store.dispatch('refreshToken')
+    },
     doClick () {
       this.$store.dispatch('getRecipes', this.$route.query)
     },
@@ -114,7 +117,8 @@ export default {
   },
   mounted () {
     let vm = this
-    setTimeout(function () { vm.$store.dispatch('refreshToken') }, 300000)
+    this.autoRefreshToken()
+    setTimeout(function () { vm.$store.dispatch('refreshToken') }, 3300000)
     this.$store.commit('setRecipes', [])
     this.$store.dispatch('getRecipes', this.$route.query)
     this.scroll()

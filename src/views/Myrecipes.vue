@@ -481,6 +481,9 @@ export default {
     }
   },
   methods: {
+    autoRefreshToken () {
+      this.$store.dispatch('refreshToken')
+    },
     closeSuccess () {
       this.successOverlay = false
       this.title = null
@@ -682,9 +685,6 @@ export default {
       var count = 0
       deleteFile(vm, count, image.key)
     },
-    autoRefreshToken () {
-      this.$store.dispatch('refreshToken')
-    },
     scroll () {
       window.onscroll = () => {
         let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight
@@ -736,7 +736,7 @@ export default {
     let vm = this
     this.$store.commit('setmyRecipes', [])
     this.autoRefreshToken()
-    setTimeout(function () { vm.autoRefreshToken() }, 300000)
+    setTimeout(function () { vm.autoRefreshToken() }, 3300000)
     this.$store.dispatch('getMyRecipes')
   },
   beforeDestroy: function () {
