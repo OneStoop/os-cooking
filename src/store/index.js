@@ -20,9 +20,28 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   plugins: [vuexLocalStorage.plugin],
   state: {
+    addrecipesLoading: false,
+    authorName: null,
     baseurl: 'http://localhost:8081',
     loading: false,
+    myRecipes: [],
     profile: null,
+    recipe: null,
+    recipeTypes: {types:
+      [
+        "Appetizers",
+        "Breads",
+        "Desserts",
+        "Drinks",
+        "Main dishes",
+        "Salads",
+        "Sauces",
+        "Side dishes",
+        "Soups"
+      ]
+    },
+    recipes: [],
+    recipesLoading: false,
     token: null,
     user: null
   },
@@ -36,14 +55,49 @@ const store = new Vuex.Store({
     setUser (state, payload) {
       state.user = payload
     },
+    setmyRecipes (state, payload) {
+      state.myRecipes = payload
+    },
     setProfile (state, payload) {
       state.profile = payload
+    },
+    setRecipe (state, payload) {
+      state.recipe = payload
+      state.authorName = null
+    },
+    setRecipes (state, payload) {
+      state.recipes = payload
+    },
+    setRecipeAuthor (state, payload) {
+      state.authorName = payload
+    },
+    setaddrecipesLoading (state, payload) {
+      state.addrecipesLoading = payload
+    },
+    setrecipesLoading (state, payload) {
+      state.recipesLoading = payload
     },
     setToken (state, payload) {
       state.token = payload
     },
     setError (state, payload) {
       state.error = payload
+    },
+    setmyRecipesAdd (state, payload) {
+      console.log(payload)
+      state.myRecipes.moreResults = payload.moreResults
+      state.myRecipes.nextOffset = payload.nextOffset
+      for (var i=0; i < payload.recipes.length; i++) {
+        state.myRecipes.recipes.splice(state.myRecipes.recipes.length, 0, payload.recipes[i])
+      }
+    },
+    setRecipesAdd (state, payload) {
+      console.log(payload)
+      state.recipes.moreResults = payload.moreResults
+      state.recipes.nextOffset = payload.nextOffset
+      for (var i=0; i < payload.recipes.length; i++) {
+        state.recipes.recipes.splice(state.recipes.recipes.length, 0, payload.recipes[i])
+      }
     }
   },
   actions: {
@@ -58,8 +112,145 @@ const store = new Vuex.Store({
             commit('setToken', idToken)
           }).catch(function () {
           })
-        } else { router.push('/signout') }
+        }
       })
+    },
+    getRecipe ({ commit }, recipeId) {
+      function doGet (recipeId, count) {
+        var auth = {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': store.state.token }
+        }
+        axios.get(process.env.VUE_APP_API_SERVER + 'recipes?recipeId=' + recipeId, auth)
+          .then(function (response) {
+            commit('setRecipe', response.data.recipes[0])
+            
+            axios.get(process.env.VUE_APP_API_SERVER + 'users?displayName=true&userId=' + response.data.recipes[0].authorId, auth)
+            .then(function (response2) {
+              commit('setRecipeAuthor', response2.data.user.displayName)
+            })
+          })
+          .catch(function (error) {
+            if (error.response.data.status === 'expired' && count < 3) {
+              count++
+              store.dispatch('refreshToken')
+              setTimeout(doGet(recipeId, count), 1000)
+            }
+            commit('setRecipe', null)
+          })
+      }
+      var count = 0
+      doGet(recipeId, count)
+    },
+    addRecipes ({ commit }, query) {
+      
+      commit('setaddrecipesLoading', true)
+      var parmsObj = Object.entries(query)
+      var parms = "?"
+
+      for (var i=0; i < parmsObj.length; i++) {
+        if (i > 0) {
+          parms += "&"
+        }
+        parms += parmsObj[i][0] + "=" + parmsObj[i][1]
+      }
+      
+      var auth = {
+        headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
+      }
+      
+      axios.get(process.env.VUE_APP_API_SERVER + 'recipes' + parms, auth)
+        .then(response => {
+          commit('setRecipesAdd', response.data)
+          commit('setaddrecipesLoading', false)
+        })
+        .catch(function () {
+          commit('setaddrecipesLoading', false)
+        })
+    },
+    addmyRecipes ({ commit }, query) {
+      if (store.state.addrecipesLoading) {
+        return
+      }
+      commit('setaddrecipesLoading', true)
+      var parmsObj = Object.entries(query)
+      var parms = "?"
+
+      for (var i=0; i < parmsObj.length; i++) {
+        if (i > 0) {
+          parms += "&"
+        }
+        parms += parmsObj[i][0] + "=" + parmsObj[i][1]
+      }
+      
+      var auth = {
+        headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
+      }
+
+      axios.get(process.env.VUE_APP_API_SERVER + 'recipes' + parms, auth)
+        .then(response => {
+          commit('setmyRecipesAdd', response.data)
+          commit('setaddrecipesLoading', false)
+        })
+        .catch(function () {
+          commit('setaddrecipesLoading', false)
+        })
+    },
+    getRecipes ({ commit }, query) {
+      
+      commit('setrecipesLoading', true)
+      var parmsObj = Object.entries(query)
+      var parms = "?"
+
+      for (var i=0; i < parmsObj.length; i++) {
+        if (i > 0) {
+          parms += "&"
+        }
+        parms += parmsObj[i][0] + "=" + parmsObj[i][1]
+      }
+      
+      var auth = {
+        headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
+      }
+      
+      axios.get(process.env.VUE_APP_API_SERVER + 'recipes' + parms, auth)
+        .then(response => {
+          commit('setRecipes', response.data)
+          commit('setrecipesLoading', false)
+        })
+        .catch(function () {
+          commit('setrecipesLoading', false)
+        })
+    },
+    getMyRecipes ({ commit }) {
+      function doGet (vm, count) {
+        var auth = {
+          headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
+        }
+      
+        axios.get(process.env.VUE_APP_API_SERVER + 'recipes?authorEmail=' + store.state.user.email, auth)
+          .then(response => {
+            console.log(response)
+            if (response.data.status === "expired") {
+              if (count < 3) {
+                count++
+                store.dispatch('refreshToken')
+                setTimeout(doGet(count), 1000)
+              }
+              else {
+                commit('setmyRecipes', response.data)
+                commit('setrecipesLoading', false)
+              }
+            }
+            else {
+              commit('setmyRecipes', response.data)
+              commit('setrecipesLoading', false)  
+            }
+          })
+      }
+    
+      commit('setrecipesLoading', true)
+      var count = 0
+      doGet(this, count)
     },
     userSignIn ({ commit }, payload) {
       commit('setLoading', true)
@@ -72,7 +263,7 @@ const store = new Vuex.Store({
               commit('setToken', firebaseUser.user._lat)
               commit('setLoading', false)
               commit('setError', null)
-              console.log('logged in, redirecting to feed')
+              console.log('logged in, redirecting')
               router.push('/')
             })
             .catch(error => {
@@ -104,7 +295,6 @@ const store = new Vuex.Store({
       firebase.auth().signOut()
       commit('setUser', null)
       commit('setProfile', null)
-      commit('clearPosts', null)
       commit('setToken', null)
       router.push('/')
     }
@@ -136,6 +326,9 @@ const store = new Vuex.Store({
     },
     user: state => {
       return state.user
+    },
+    getrecipesLoading: state => {
+      return state.recipesLoading
     }
   }
 })

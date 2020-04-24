@@ -11,6 +11,8 @@ const router = new VueRouter({
   routes: [
     { path: '/', component: loadView('Home') },
     { path: '/myrecipes', component: loadView('Myrecipes') },
+    { path: '/recipe', component: loadView('Recipe') },
+    { path: '/recipes', component: loadView('Recipes') },
     { path: '/signin', component: loadView('Signin'), meta: { requiresNoAuth: true } },
     { path: '/signout', component: loadView('Signout'), meta: { requiresAuth: true } }
   ]

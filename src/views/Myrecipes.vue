@@ -1,77 +1,377 @@
+<style>
+.v-card__text, .v-card__title {
+  word-break: normal; /* maybe !important  */
+}
+</style>
 <template>
   <v-container fluid>
   <v-card>
-    <v-toolbar flat color="primary" dark>
-      <v-toolbar-title>User Profile</v-toolbar-title>
+    <v-toolbar flat color="cyan darken-2" dark>
+      <v-toolbar-title>My Recipes</v-toolbar-title>
     </v-toolbar>
-    <v-tabs vertical>
+    <v-tabs v-model="activeTab" vertical icons-and-text>
       <v-tab>
-        <v-icon left>mdi-account</v-icon>
-        Option 1
+        <v-icon left>assignment</v-icon>
+        My Recipes
       </v-tab>
       <v-tab>
-        <v-icon left>mdi-lock</v-icon>
-        Option 2
+        <v-icon left>bookmark</v-icon>
+        Favorite
       </v-tab>
       <v-tab>
-        <v-icon left>mdi-access-point</v-icon>
-        Option 3
+        <v-icon left>add_box</v-icon>
+        Add Recipe
       </v-tab>
 
       <v-tab-item>
-        <v-card flat>
-          <v-card-text>
-            <p>
-              Sed aliquam ultrices mauris. Donec posuere vulputate arcu. Morbi ac felis. Etiam feugiat lorem non metus. Sed a libero.
-            </p>
 
-            <p>
-              Nam ipsum risus, rutrum vitae, vestibulum eu, molestie vel, lacus. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc. Aliquam lobortis. Aliquam lobortis. Suspendisse non nisl sit amet velit hendrerit rutrum.
-            </p>
+        <v-row no-gutters v-if="this.$store.state.recipesLoading === false">
+          <v-col cols="3" v-for="d in this.$store.state.myRecipes.recipes" :key="d._id">
+            <v-card class="pa-2 ma-2" md="2">
+              <router-link :to="'/recipe?id=' + d._id">
+              <div v-if="d.images.length === 1">
+                <v-img
+                  :src="d.images[0].url"
+                  lazy-src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+                  height="300px"
+                  
+                ></v-img>
+              </div>
+              <div v-if="d.images.length === 0">
+                <v-img
+                  src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+                  height="300px"
+                ></v-img>
+              </div>
+              </router-link>
+              <v-card-title>{{ d.title }}</v-card-title>
+              
+              <v-card-actions>
+              <v-rating
+                  :value="d.rating"
+                  color="amber"
+                  dense
+                  half-increments
+                  readonly
+                  size="14"
+                ></v-rating>
+                <div class="grey--text ml-4">{{ d.rating }} ({{ d.ratingCount }})</div>
+                <v-spacer></v-spacer>
+                <v-btn icon>
+                  <v-icon>bookmarkt</v-icon>
+                </v-btn>
+                <v-btn icon>
+                  <v-icon>mdi-share-variant</v-icon>
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
 
-            <p class="mb-0">
-              Phasellus dolor. Fusce neque. Fusce fermentum odio nec arcu. Pellentesque libero tortor, tincidunt et, tincidunt eget, semper nec, quam. Phasellus blandit leo ut odio.
-            </p>
-          </v-card-text>
-        </v-card>
+        <v-row no-gutters v-if="showLoading === true">
+          <v-col cols="3" v-for="(d, i) in [1,2,3]" :key="i">
+            <v-skeleton-loader
+              class="ma-4"
+              max-width="300"
+              type="card"
+            ></v-skeleton-loader>
+          </v-col>
+        </v-row>
+      </v-tab-item>
+
+      <v-tab-item>
+        <v-row no-gutters>
+          <v-col cols="6" md="2">
+            <v-card class="mx-auto" outlined title>
+
+            </v-card>
+          </v-col>
+        </v-row>
       </v-tab-item>
       <v-tab-item>
-        <v-card flat>
-          <v-card-text>
-            <p>
-              Morbi nec metus. Suspendisse faucibus, nunc et pellentesque egestas, lacus ante convallis tellus, vitae iaculis lacus elit id tortor. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci. Curabitur ligula sapien, tincidunt non, euismod vitae, posuere imperdiet, leo. Nunc sed turpis.
-            </p>
+        <v-row no-gutters>
+          <v-col cols="12" sm="4" md="3"></v-col>
+          <v-col cols="12" sm="4" md="6">
+        <form @submit.prevent="submitAddRecipe">
 
-            <p>
-              Suspendisse feugiat. Suspendisse faucibus, nunc et pellentesque egestas, lacus ante convallis tellus, vitae iaculis lacus elit id tortor. Proin viverra, ligula sit amet ultrices semper, ligula arcu tristique sapien, a accumsan nisi mauris ac eros. In hac habitasse platea dictumst. Fusce ac felis sit amet ligula pharetra condimentum.
-            </p>
+            <v-col>
+              <v-alert type="error" dismissible v-model="alert">
+                {{ error }}
+              </v-alert>
+            </v-col>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Recipe title"
+                    type="text"
+                    v-model="title"
+                    outlined
+                    shaped
+                    required>
+                  </v-text-field>
+                </v-col>
+                
+                <v-col cols="4">
+                  <v-text-field
+                    label="Prep Time minutes"
+                    type="text"
+                    v-model="prepTime"
+                    required>
+                  </v-text-field>
+                </v-col>
+                
+                <v-col cols="4">
+                  <v-text-field
+                    label="Cook Time minutes"
+                    type="text"
+                    v-model="cookTime"
+                    required>
+                  </v-text-field>
+                </v-col>
+                
+                <v-col cols="4">
+                  <v-text-field
+                    label="Servings"
+                    type="text"
+                    v-model="servings"
+                    required>
+                  </v-text-field>
+                </v-col>
+                
+                <v-col cols="3">
+                  <v-select
+                    autocomplete
+                    label="Recipe Type"
+                    :items="this.$store.state.recipeTypes.types"
+                    v-model="recipeType"
+                    v-on:change="getRecipeSubTypes"
+                    required>
+                  </v-select>
+                </v-col>
 
-            <p>
-              Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Nam commodo suscipit quam. In consectetuer turpis ut velit. Sed cursus turpis vitae tortor. Aliquam eu nunc.
-            </p>
+                <v-col cols="3">
+                  <v-select
+                    autocomplete
+                    label="Sub Type"
+                    :items="recipeSubTypes"
+                    v-model="recipeSubType"
+                    :loading="recipeSubTypesLoading"
+                    required>
+                  </v-select>
+                </v-col>
+                
+                <v-col cols="3">
+                  <v-select
+                    label="Cuisine"
+                    :items="cuisineType.types"
+                    v-model="cusine"
+                    required>
+                  </v-select>
+                </v-col>
+                
+                <v-col cols="3">
+                  <v-select
+                    label="Meal Time"
+                    :items="mealtimeItems.types"
+                    v-model="mealTime"
+                    required>
+                  </v-select>
+                </v-col>
 
-            <p>
-              Etiam ut purus mattis mauris sodales aliquam. Ut varius tincidunt libero. Aenean viverra rhoncus pede. Duis leo. Fusce fermentum odio nec arcu.
-            </p>
+                 <v-col cols="12">
+                 <div class="title">Ingredients <div class="font-weight-thin">(click to edit in column)</div></div>
+                 </v-col>
+                 
+                 <v-col cols="12">
+                   <v-data-table
+                     :headers="headers"
+                     :items="ingredients"
+                     class="elevation-1"
+                     v-model="selected"
+                     show-select
+                     item-key="id"
+                     hide-default-footer
+                     disable-pagination
+                  >
+                    <template v-slot:item.quantity="props">
+                      <v-edit-dialog
+                        :return-value.sync="props.item.quantity"
+                        @save="save"
+                      > {{ props.item.quantity }}
+                        <template v-slot:input>
+                          <v-text-field
+                            v-model="props.item.quantity"
+                            label="Quantity"
+                            single-line
+                          ></v-text-field>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.measure="props">
+                      <v-edit-dialog
+                        :return-value.sync="props.item.measure"
+                        @save="save"
+                      > {{ props.item.measure }}
+                        <template v-slot:input>
+                          <v-text-field
+                            v-model="props.item.measure"
+                            label="Measure"
+                            single-line
+                          ></v-text-field>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.item="props">
+                      <v-edit-dialog
+                        :return-value.sync="props.item.item"
+                        @save="save"
+                      > {{ props.item.item }}
+                        <template v-slot:input>
+                          <v-text-field
+                            v-model="props.item.item"
+                            label="Item"
+                            single-line
+                          ></v-text-field>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                    <template v-slot:item.note="props">
+                      <v-edit-dialog
+                        :return-value.sync="props.item.note"
+                        @save="save"
+                      > {{ props.item.note }}
+                        <template v-slot:input>
+                          <v-text-field
+                            v-model="props.item.note"
+                            label="Note"
+                            single-line
+                          ></v-text-field>
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+                  </v-data-table>
+                </v-col>
 
-            <p class="mb-0">
-              Donec venenatis vulputate lorem. Aenean viverra rhoncus pede. In dui magna, posuere eget, vestibulum et, tempor auctor, justo. Fusce commodo aliquam arcu. Suspendisse enim turpis, dictum sed, iaculis a, condimentum nec, nisi.
-            </p>
-          </v-card-text>
-        </v-card>
-      </v-tab-item>
-      <v-tab-item>
-        <v-card flat>
-          <v-card-text>
-            <p>
-              Fusce a quam. Phasellus nec sem in justo pellentesque facilisis. Nam eget dui. Proin viverra, ligula sit amet ultrices semper, ligula arcu tristique sapien, a accumsan nisi mauris ac eros. In dui magna, posuere eget, vestibulum et, tempor auctor, justo.
-            </p>
+                <v-col cols="12">
+                  <v-btn @click="addIngredientLine()" class="ma-2"><v-icon left>add_box</v-icon>add ingredient line</v-btn>
+                  <v-btn color="red lighten-2" @click="deleteItem" class="ma-2">Delete</v-btn>
+                </v-col>
 
-            <p class="mb-0">
-              Cras sagittis. Phasellus nec sem in justo pellentesque facilisis. Proin sapien ipsum, porta a, auctor quis, euismod ut, mi. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nam at tortor in tellus interdum sagittis.
-            </p>
-          </v-card-text>
-        </v-card>
+                <v-col cols="12">
+                  <v-textarea
+                    label="Description"
+                    type="text"
+                    v-model="description"
+                    required>
+                  </v-textarea>
+                </v-col>
+                
+                 <v-col cols="12">
+                  <v-textarea
+                    label="Directions"
+                    type="text"
+                    v-model="directions"
+                    required>
+                  </v-textarea>
+                </v-col>
+                
+                <v-col cols="12">
+                  <v-textarea
+                    label="Notes (optional)"
+                    type="text"
+                    v-model="notes">
+                  </v-textarea>
+                </v-col>
+                
+                <v-col cols="12">
+                  <v-text-field
+                    label="Source (optional)"
+                    type="text"
+                    v-model="source">
+                  </v-text-field>
+                </v-col>
+                
+                <v-col cols="3">
+                  <v-select
+                    label="Visibility"
+                    :items="['Public', 'Private']"
+                    v-model="visibility"
+                    required>
+                  </v-select>
+                </v-col>
+                
+                <v-col cols="9">
+
+                
+            <v-flex xs12>
+              <v-card>
+                <input
+                  type="file"
+                  ref="file"
+                  multiple="multiple"
+                  :name="uploadFieldName"
+                  @change="onFileChange($event.target.name, $event.target.files)"
+                  style="display:none"
+                >
+                <v-container fluid grid-list-md>
+                  <v-layout row wrap>
+                    <v-flex
+                      xs2
+                      v-for="img in this.imageIDs"
+                      :key="img.imageId"
+                    >
+                      <v-skeleton-loader
+                        :loading="deleting"
+                        height="100px"
+                        type="card"
+                      >
+                        <v-card>
+                          <v-img
+                            :src="img.url"
+                            height="100px"
+                          >
+                          </v-img>
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn small icon @click="removedEvent(img)"><v-icon>delete_outline</v-icon></v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-skeleton-loader>
+                    </v-flex>
+                      <v-skeleton-loader v-if="imgLoading" type="card" height="100px">
+                      </v-skeleton-loader>
+                  </v-layout>
+                </v-container>
+              </v-card>
+            </v-flex>
+
+            <v-flex xs12 align-center justify-space-between>
+              <v-btn small @click="launchFilePicker()"><v-icon>insert_photo</v-icon>Add a photo</v-btn>
+            </v-flex>                
+
+                
+                </v-col>
+
+              <div class="text-center">
+              <v-btn color="cyan" class="ma-2" type="submit">Save</v-btn>
+              <v-btn color="cyan" class="ma-2" @click="canclePost">Cancle</v-btn>
+              </div>
+          </v-row>
+        </form>
+          </v-col>
+          <v-col cols="12" sm="4" md="4"></v-col>
+          </v-row>
+          <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
+          {{ snackText }}
+          </v-snackbar>
+          <v-overlay :value="successOverlay">
+            <v-btn
+              @click="closeSuccess"
+              color="success"
+            >
+              Recipe Added
+            </v-btn>
+          </v-overlay>
       </v-tab-item>
     </v-tabs>
   </v-card>
@@ -80,17 +380,327 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
+      activeTab: 0,
+      recipeType: null,
+      recipeSubTypes: ['Loading'],
+      recipeSubType: null,
+      recipeSubTypesLoading: false,
+      cusine: null,
+      mealTime: null,
+      deleteDialog: false,
       email: '',
       password: '',
-      alert: false
+      alert: false,
+      cards2: [
+        {title: "jim1"},
+        {title: "jim2"},
+        {title: "jim3"},
+        {title: "jim4"}
+      ],
+      selected: [],
+      snack: false,
+      snackColor: null,
+      snackText: "",
+      imgLoading: false,
+      deleting: false,
+      title: null,
+      prepTime: null,
+      cookTime: null,
+      imageIDs: [],
+      uploadFieldName: null,
+      visibility: "Public",
+      headers: [
+        {
+          text: "Quantity",
+          value: "quantity"
+        },
+        {
+          text: "Measure",
+          value: "measure"
+        },
+        {
+          text: "Item",
+          value: "item"
+        },
+        {
+          text: "Note",
+          value: "note"
+        }
+      ],
+      ingredients: [
+        {
+          "quantity": "",
+          "measure": "",
+          "item": "",
+          "note": "",
+          "id": 0
+        }
+      ],
+      source: null,
+      notes: null,
+      directions: null,
+      description: null,
+      servings: null,
+      cuisineType: {
+        types:
+          [
+            "African",
+            "Asian",
+            "Chinese",
+            "Creole and Cajun",
+            "English",
+            "French",
+            "Greek",
+            "German",
+            "Indian",
+            "Irish",
+            "Italian",
+            "Mexican",
+            "Southern",
+            "Southwest",
+            "Spanish",
+            "Thai",
+            "other"
+          ]
+      },
+      mealtimeItems: {
+        types:
+          [
+            "Breakfast",
+            "Lunch",
+            "Dinner",
+            "Brunch",
+            "other"
+          ]
+      },
+      successOverlay: false
     }
   },
   methods: {
-    userSignIn () {
-      this.$store.dispatch('userSignIn', { email: this.email, password: this.password })
+    closeSuccess () {
+      this.successOverlay = false
+      this.title = null
+      this.recipeType = null
+      this.recipeSubTypes = []
+      this.cusine = null
+      this.mealTime = null
+      this.selected = []
+      this.prepTime = null
+      this.cookTime = null
+      this.imageIDs = []
+      this.uploadFieldName = null
+      this.visibility = "Public"
+      this.source = null
+      this.notes = null
+      this.directions = null
+      this.description = null
+      this.servings = null
+      this.activeTab = 0
+      this.ingredients = [
+        {
+          "quantity": "",
+          "measure": "",
+          "item": "",
+          "note": "",
+          "id": 0
+        }
+      ]
+    },
+    submitAddRecipe () {
+      var images = []
+      for(var i = 0; i < this.imageIDs.length; i++) {
+        images.push(this.imageIDs[i].imageID)
+      }
+      var data = {
+        title: this.title,
+        prepTime: Number(this.prepTime),
+        cookTime: Number(this.cookTime),
+        servings: Number(this.servings),
+        recipeType : this.recipeType,
+        recipeSubType : this.recipeSubType,
+        cusine : this.cusine,
+        mealTime : this.mealTime,
+        ingredients: this.ingredients,
+        description: this.description,
+        directions: this.directions,
+        notes: this.notes,
+        source: this.source,
+        visibility: this.visibility,
+        images: images
+      }
+      console.log(data)
+      var auth = {
+        headers: { 'Content-Type': 'application/json', 'Authorization': this.$store.state.token }
+      }
+    
+      axios.post(process.env.VUE_APP_API_SERVER + 'recipes', data, auth)
+        .then(response => {
+          console.log(response)
+          this.successOverlay = true
+          this.$store.dispatch('getMyRecipes')
+          this.activeTab =  0
+        })
+    },
+    canclePost () {
+      this.title = null
+      this.recipeType = null
+      this.recipeSubTypes = []
+      this.cusine = null
+      this.mealTime = null
+      this.selected = []
+      this.prepTime = null
+      this.cookTime = null
+      this.imageIDs = []
+      this.uploadFieldName = null
+      this.visibility = "Public"
+      this.source = null
+      this.notes = null
+      this.directions = null
+      this.description = null
+      this.servings = null
+      this.activeTab = 0
+      this.ingredients = [
+        {
+          "quantity": "",
+          "measure": "",
+          "item": "",
+          "note": "",
+          "id": 0
+        }
+      ]
+    },
+    getRecipeSubTypes (type) {
+      this.recipeSubTypes = []
+      this.recipeSubTypesLoading = true
+      var auth = {
+          headers: { 'Content-Type': 'application/json', 'Authorization': this.$store.state.token }
+        }
+      axios.get(process.env.VUE_APP_API_SERVER + 'recipeTypes?type=' + type, auth)
+          .then(response => {
+            this.recipeSubTypes = response.data.types
+            this.recipeSubTypesLoading = false
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+    },
+    deleteItem () {
+      for(var i = 0; i < this.selected.length; i++) {
+        const index = this.ingredients.indexOf(this.selected[i])
+        this.ingredients.splice(index, 1)
+      }
+      this.deleteDialog = false
+      this.selected = []
+    },
+    addIngredientLine () {
+      var found = true
+      var addThis = 0
+      while (found) {
+        var id = this.ingredients.length + addThis
+        found = this.ingredients.some(el => el.id === id)
+        addThis += 1
+      }
+      this.ingredients.push({
+          "quantity": "",
+          "measure": "",
+          "item": "",
+          "note": "",
+          "id": id
+        })
+    },
+    save () {
+      this.snack = true
+      this.snackColor = 'success'
+      this.snackText = 'Data saved'
+    },
+    launchFilePicker () {
+      this.imgLoading = true
+      this.$refs.file.click()
+    },
+    launchEditFilePicker () {
+      this.$refs.editFile.click()
+    },
+    onFileChange (fieldName, file) {
+      function doPost (vm, f) {
+        const formData = new FormData()
+        formData.append('file', f, f.name)
+        var auth = {
+          headers: { 'Content-Type': 'application/json', 'Authorization': vm.$store.state.token }
+        }
+        axios.post(process.env.VUE_APP_API_SERVER + 'images', formData, auth)
+          .then(response => {
+            console.log(response.data)
+            vm.imageIDs.push({ 'url': response.data.url,
+                               'imageID': response.data.imageID })
+            vm.imgLoading = false
+          })
+          .catch(function (error) {
+            console.log(error)
+            vm.imgLoading = false
+          })
+      }
+
+      for (var i = 0; i < file.length; i++) {
+        doPost(this, file[i])
+      }
+    },
+    removedEvent (image) {
+      function deleteFile (vm, count, key) {
+        var auth = {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': vm.$store.getters.token }
+        }
+        axios
+          .delete(process.env.VUE_APP_API_SERVER + 'images?key=' + key, auth)
+          .then(response => {
+            console.log(response)
+            for (var i = 0; i < vm.imageIDs.length; i++) {
+              if (vm.imageIDs[i].key === key) {
+                vm.imageIDs.splice(i, 1)
+              }
+              vm.deleting = false
+            }
+          })
+          .catch(function (e) {
+            if (e.response.data.status === 'expired' && count < 3) {
+              count++
+              vm.$store.dispatch('refreshToken')
+              setTimeout(deleteFile(vm, count, image), 1000)
+            } else if (e.response.status >= 400 && count < 3) {
+              count++
+              setTimeout(deleteFile(vm, count, image), 1000)
+            } else {
+              console.log("did something else")
+            }
+          })
+      }
+      this.deleting = true
+      let vm = this
+      var count = 0
+      deleteFile(vm, count, image.key)
+    },
+    autoRefreshToken () {
+      this.$store.dispatch('refreshToken')
+    },
+    scroll () {
+      window.onscroll = () => {
+        let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight
+
+        if (bottomOfWindow) {
+          // this.addPosts()
+          console.log("at the bottom")
+          if (this.$store.state.myRecipes.moreResults && this.$store.state.addrecipesLoading === false) {
+            var newQuery = {}
+            newQuery['limit'] = 10
+            newQuery['nextOffset'] = this.$store.state.myRecipes.nextOffset
+            newQuery['authorEmail'] = this.$store.state.user.email
+            this.$store.dispatch('addmyRecipes', newQuery)
+          }
+        }
+      }
     }
   },
   computed: {
@@ -99,6 +709,14 @@ export default {
     },
     loading () {
       return this.$store.state.loading
+    },
+    showLoading: function () {
+       if (this.$store.state.recipesLoading === true || this.$store.state.addrecipesLoading == true) {
+        return true
+       }
+       else {
+        return false
+       }
     }
   },
   watch: {
@@ -112,6 +730,17 @@ export default {
         this.$store.commit('setError', null)
       }
     }
+  },
+  mounted () {
+    this.scroll()
+    let vm = this
+    this.$store.commit('setmyRecipes', [])
+    this.autoRefreshToken()
+    setTimeout(function () { vm.autoRefreshToken() }, 300000)
+    this.$store.dispatch('getMyRecipes')
+  },
+  beforeDestroy: function () {
+    this.$store.commit('setmyRecipes', [])
   }
 }
 </script>
