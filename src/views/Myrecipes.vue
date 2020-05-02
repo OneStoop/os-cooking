@@ -9,7 +9,7 @@
     <v-toolbar flat color="cyan darken-2" dark>
       <v-toolbar-title>My Recipes</v-toolbar-title>
     </v-toolbar>
-    <v-tabs v-model="activeTab" vertical icons-and-text>
+    <v-tabs v-model="activeTab" icons-and-text>
       <v-tab>
         <v-icon left>assignment</v-icon>
         My Recipes
@@ -26,7 +26,7 @@
       <v-tab-item>
 
         <v-row no-gutters v-if="this.$store.state.recipesLoading === false">
-          <v-col cols="3" v-for="d in this.$store.state.myRecipes.recipes" :key="d._id">
+          <v-col cols="12" md="6" lg="4" xl="3" v-for="d in this.$store.state.myRecipes.recipes" :key="d._id">
             <v-card class="pa-2 ma-2" md="2">
               <router-link :to="'/recipe?id=' + d._id">
               <div v-if="d.images.length === 1">
@@ -178,78 +178,49 @@
                   </v-select>
                 </v-col>
 
-                 <v-col cols="12">
-                 <div class="title">Ingredients <div class="font-weight-thin">(click to edit in column)</div></div>
-                 </v-col>
+                <v-col cols="12">
+                  <div class="title">Ingredients <div class="font-weight-thin">(click to edit in column)</div></div>
+                </v-col>
                  
-                 <v-col cols="12">
-                   <v-data-table
-                     :headers="headers"
-                     :items="ingredients"
-                     class="elevation-1"
-                     v-model="selected"
-                     show-select
-                     item-key="id"
-                     hide-default-footer
-                     disable-pagination
-                  >
-                    <template v-slot:item.quantity="props">
-                      <v-edit-dialog
-                        :return-value.sync="props.item.quantity"
-                        @save="save"
-                      > {{ props.item.quantity }}
-                        <template v-slot:input>
-                          <v-text-field
-                            v-model="props.item.quantity"
-                            label="Quantity"
-                            single-line
-                          ></v-text-field>
-                        </template>
-                      </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.measure="props">
-                      <v-edit-dialog
-                        :return-value.sync="props.item.measure"
-                        @save="save"
-                      > {{ props.item.measure }}
-                        <template v-slot:input>
-                          <v-text-field
-                            v-model="props.item.measure"
-                            label="Measure"
-                            single-line
-                          ></v-text-field>
-                        </template>
-                      </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.item="props">
-                      <v-edit-dialog
-                        :return-value.sync="props.item.item"
-                        @save="save"
-                      > {{ props.item.item }}
-                        <template v-slot:input>
-                          <v-text-field
-                            v-model="props.item.item"
-                            label="Item"
-                            single-line
-                          ></v-text-field>
-                        </template>
-                      </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.note="props">
-                      <v-edit-dialog
-                        :return-value.sync="props.item.note"
-                        @save="save"
-                      > {{ props.item.note }}
-                        <template v-slot:input>
-                          <v-text-field
-                            v-model="props.item.note"
-                            label="Note"
-                            single-line
-                          ></v-text-field>
-                        </template>
-                      </v-edit-dialog>
-                    </template>
-                  </v-data-table>
+                <v-col cols="12">
+                   <v-simple-table>
+                     <template v-slot:default>
+                       <tbody>
+                         <tr v-for="item in ingredients" :key="item.id">
+                           <td>
+                             <v-checkbox
+                               v-model="selected"
+                               :value="item.id"
+                             ></v-checkbox>
+                           </td>
+                           <td>
+                             <v-text-field
+                               v-model="item.quantity"
+                               label="Quantity"
+                             ></v-text-field>
+                           </td>
+                           <td>
+                             <v-text-field
+                               v-model="item.measure"
+                               label="Measure"
+                             ></v-text-field>
+                           </td>
+                           <td>
+                             <v-text-field
+                               v-model="item.item"
+                               label="Item"
+                             ></v-text-field>
+                           </td>
+                           <td>
+                             <v-text-field
+                               v-model="item.note"
+                               label="Note"
+                             ></v-text-field>
+                           </td>
+                         </tr>
+                       </tbody>
+                     </template>
+                  </v-simple-table>
                 </v-col>
 
                 <v-col cols="12">
@@ -605,6 +576,7 @@ export default {
       while (found) {
         var id = this.ingredients.length + addThis
         found = this.ingredients.some(el => el.id === id)
+        console.log(id)
         addThis += 1
       }
       this.ingredients.push({
