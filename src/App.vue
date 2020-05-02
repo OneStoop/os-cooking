@@ -10,6 +10,55 @@
       app
       color="cyan"
       dark
+      class="hidden-md-and-up"
+    >
+      <v-text-field
+        label="Outlined"
+        placeholder="Search recipes"
+        outlined
+        rounded
+        dense
+        single-line
+        class="mt-5"
+      ></v-text-field>
+
+      <v-spacer />
+      <router-link :to="'/'" style="text-decoration: none;" class="mr-4">
+        <v-icon>home</v-icon>
+      </router-link>
+      
+      <v-btn text v-if="this.$store.getters.isNotAuthenticated" :to="'/signin/'">Sign In</v-btn>
+      
+      <v-menu bottom left v-if="this.$store.getters.isAuthenticated">
+        <template v-slot:activator="{ on }">
+          <v-btn
+            dark
+            icon
+            v-on="on"
+          >
+            <v-icon>account_circle</v-icon>
+          </v-btn>
+        </template>
+        
+        <v-list>
+          <v-list-item
+            v-for="(item, i) in items"
+            :key="i"
+          >
+            <v-btn color="info" text :to="item.to">
+              {{ item.title }}
+            </v-btn>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    
+    </v-app-bar>
+  
+    <v-app-bar
+      app
+      color="cyan"
+      dark
+      class="hidden-sm-and-down"
     >
       <v-btn :to="'/'" text>
         <v-toolbar-title>
@@ -81,11 +130,8 @@
             v-for="(item, i) in items"
             :key="i"
           >
-            <v-btn color="info" text v-if="item.title === 'My Profile'" :to="'/profile/' + $store.getters.user.email">
-              My Profile
-            </v-btn>
-            <v-btn color="info" text v-if="item.title === 'Sign Out'" :to="'/signout'">
-              Sign Out
+            <v-btn color="info" text :to="item.to">
+              {{ item.title }}
             </v-btn>
           </v-list-item>
         </v-list>
@@ -113,8 +159,9 @@ export default {
     return {
       browse: false,
       items: [
-      { title: "My Profile"},
-      { title: "Sign Out"}
+      { title: "My Profile", to: "/profile/" + this.$store.getters.user.email},
+      { title: "My Recipes", to: "/myrecipes"},
+      { title: "Sign Out", to: "/signout"}
       ],
       browseItem: null
     }

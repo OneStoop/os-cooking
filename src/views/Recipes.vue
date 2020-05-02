@@ -5,7 +5,61 @@
 </style>
 <template>
   <v-container>
-
+    <v-card class="hidden-md-and-up">
+      <v-row no-gutters v-if="this.$store.getters.getrecipesLoading === false">
+        <v-col cols="12" v-for="d in this.$store.state.recipes.recipes" :key="d._id">
+          <v-card class="pa-2 ma-2" md="2">
+            <router-link :to="'/recipe?id=' + d._id">
+            <div v-if="d.images.length === 1">
+              <v-img
+                :src="d.images[0].url"
+                lazy-src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+                height="300px"
+                
+              ></v-img>
+            </div>
+            <div v-if="d.images.length === 0">
+              <v-img
+                src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+                height="300px"
+              ></v-img>
+            </div>
+            </router-link>
+            <v-card-title>{{ d.title }}</v-card-title>
+            
+            <v-card-actions>
+            <v-rating
+                :value="d.rating"
+                color="amber"
+                dense
+                half-increments
+                readonly
+                size="14"
+              ></v-rating>
+              <div class="grey--text ml-4">{{ d.rating }} ({{ d.ratingCount }})</div>
+              <v-spacer></v-spacer>
+              <v-btn icon>
+                <v-icon>bookmarkt</v-icon>
+              </v-btn>
+              <v-btn icon>
+                <v-icon>mdi-share-variant</v-icon>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row no-gutters v-if="showLoading">
+        <v-col cols="12">
+          <v-skeleton-loader
+            class="ma-4"
+            type="card"
+          ></v-skeleton-loader>
+        </v-col>
+      </v-row>  
+    </v-card>
+    
+    
+    <v-card class="hidden-sm-and-down">
     <v-row no-gutters v-if="this.$store.getters.getrecipesLoading === false">
       <v-col cols="3" v-for="d in this.$store.state.recipes.recipes" :key="d._id">
         <v-card class="pa-2 ma-2" md="2">
@@ -58,6 +112,7 @@
         ></v-skeleton-loader>
       </v-col>
     </v-row>
+    </v-card>
   </v-container>
 </template>
 <script>
