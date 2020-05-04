@@ -226,6 +226,31 @@ const store = new Vuex.Store({
           commit('setrecipesLoading', false)
         })
     },
+    searchRecipes ({ commit }, query) {
+      commit('setrecipesLoading', true)
+      var parmsObj = Object.entries(query)
+      var parms = "?"
+
+      for (var i=0; i < parmsObj.length; i++) {
+        if (i > 0) {
+          parms += "&"
+        }
+        parms += parmsObj[i][0] + "=" + parmsObj[i][1]
+      }
+      
+      var auth = {
+        headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
+      }
+      
+      axios.get(process.env.VUE_APP_API_SERVER + 'recipesearch' + parms, auth)
+        .then(response => {
+          commit('setRecipes', response.data)
+          commit('setrecipesLoading', false)
+        })
+        .catch(function () {
+          commit('setrecipesLoading', false)
+        })
+    },
     getMyRecipes ({ commit }) {
       function doGet (vm, count) {
         var auth = {

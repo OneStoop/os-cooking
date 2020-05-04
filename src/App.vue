@@ -12,15 +12,19 @@
       dark
       class="hidden-md-and-up"
     >
-      <v-text-field
-        label="Outlined"
-        placeholder="Search recipes"
-        outlined
-        rounded
-        dense
-        single-line
-        class="mt-5"
-      ></v-text-field>
+      <form v-on:submit.prevent="goToSearch()">
+        <v-text-field
+          label="Outlined"
+          placeholder="Search recipes"
+          v-model="searchModel"
+          outlined
+          rounded
+          dense
+          single-line
+          class="mt-5"
+        ></v-text-field>
+      </form>
+      <v-btn @click="goToSearch()" icon><v-icon>search</v-icon></v-btn>
 
       <v-spacer />
       <router-link :to="'/'" style="text-decoration: none;" class="mr-4">
@@ -104,12 +108,19 @@
       </v-menu>      
       
 
-
-      <v-text-field
-        label="Search"
-        single-line
-        outlined
-      ></v-text-field>
+      <form v-on:submit.prevent="goToSearch()">
+        <v-text-field
+          label="Outlined"
+          placeholder="Search recipes"
+          v-model="searchModel"
+          outlined
+          rounded
+          dense
+          single-line
+          class="mt-5"
+        ></v-text-field>
+      </form>
+      <v-btn @click="goToSearch()" icon><v-icon>search</v-icon></v-btn>
       <v-spacer />
 
       <v-btn text v-if="this.$store.getters.isNotAuthenticated" :to="'/signin/'">Sign In</v-btn>
@@ -163,7 +174,8 @@ export default {
       { title: "My Recipes", to: "/myrecipes"},
       { title: "Sign Out", to: "/signout"}
       ],
-      browseItem: null
+      browseItem: null,
+      searchModel: null
     }
   },
   computed: {
@@ -172,8 +184,11 @@ export default {
     autoRefreshToken () {
       this.$store.dispatch('refreshToken')
     },
-    doThis () {
-      alert("Hi")
+    goToSearch () {
+      if (this.searchModel != null) {
+        window.location.replace('/search?search=' + this.searchModel)
+        this.searchModel = null
+      }
     }
   },
   beforeUpdate () {
