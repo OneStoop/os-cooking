@@ -668,7 +668,7 @@ export default {
             var newQuery = {}
             newQuery['limit'] = 10
             newQuery['nextOffset'] = this.$store.state.myRecipes.nextOffset
-            newQuery['authorEmail'] = this.$store.state.user.email
+            newQuery['author'] = this.$store.state.user.email
             this.$store.dispatch('addmyRecipes', newQuery)
           }
         }

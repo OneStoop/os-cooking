@@ -16,7 +16,7 @@
         <v-text-field
           label="Outlined"
           placeholder="Search recipes"
-          v-model="searchModel"
+          v-model="search"
           outlined
           rounded
           dense
@@ -112,7 +112,7 @@
         <v-text-field
           label="Outlined"
           placeholder="Search recipes"
-          v-model="searchModel"
+          v-model="search"
           outlined
           rounded
           dense
@@ -174,20 +174,27 @@ export default {
       { title: "My Recipes", to: "/myrecipes"},
       { title: "Sign Out", to: "/signout"}
       ],
-      browseItem: null,
-      searchModel: null
+      browseItem: null
     }
   },
   computed: {
+    search: {
+      get () {
+        return this.$store.state.searchModel
+      },
+      set (value) {
+          this.$store.commit('setsearchModel', value)
+      }
+    }
   },
   methods: {
     autoRefreshToken () {
       this.$store.dispatch('refreshToken')
     },
     goToSearch () {
-      if (this.searchModel != null) {
-        window.location.replace('/search?search=' + this.searchModel)
-        this.searchModel = null
+      if (this.$store.state.searchModel != null) {
+        window.location.replace('/search?term=' + this.$store.state.searchModel)
+        this.$store.commit('setsearchModel', null)
       }
     }
   },
