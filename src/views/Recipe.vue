@@ -380,50 +380,63 @@
                 </v-card>
               </v-dialog>
               
-
+<!--
               <v-btn
                 class="ma-2"
                 color="primary"
               >
                 Ask a Question
               </v-btn>
+-->
             </div>
             <v-tabs
             >
                 <v-tab>Reviews</v-tab>
+<!--
                 <v-tab>Questions</v-tab>
+-->
                 <v-tab-item>
-                  <v-card v-for="review in this.visableReviews" :key="review._id">
-                    <v-card-title>
-                      {{ review.authorId }}
-                      <v-spacer></v-spacer>
-                      <div class="subtitle-1">
-                        {{ review.date }}
-                      </div>
-                    </v-card-title>
-                    <v-card-subtitle>
-                      <v-rating
-                        :value="review.score"
-                        color="primary"
-                        half-increments
-                        dense
-                        readonly
-                        size="18"
-                      ></v-rating>
-                    </v-card-subtitle>
-                    <v-card-text>
-                      <div class="font-italic font-weight-medium">Recommended: {{ review.recommend }}</div>
-                      <div class="body-1 mt-2">
-                        {{ review.body }}
-                      </div>
-                      <div class="font-weight-bold mt-2">
-                        Location:
-                      </div>
-                      <div>
-                        {{ review.location }}
-                      </div>
-                    </v-card-text> 
-                  </v-card>
+<!--
+                  <v-skeleton-loader
+                    :loading="this.thisReviewsLoading"
+                    :boilerplate="false"
+                    type="list-item-two-line"
+                  >
+-->
+                    <v-card v-for="review in this.visableReviews" :key="review._id">
+                      <v-card-title>
+                        {{ review.authorId }}
+                        <v-spacer></v-spacer>
+                        <div class="subtitle-1">
+                          {{ review.date }}
+                        </div>
+                      </v-card-title>
+                      <v-card-subtitle>
+                        <v-rating
+                          :value="review.score"
+                          color="primary"
+                          half-increments
+                          dense
+                          readonly
+                          size="18"
+                        ></v-rating>
+                      </v-card-subtitle>
+                      <v-card-text>
+                        <div class="font-italic font-weight-medium">Recommended: {{ review.recommend }}</div>
+                        <div class="body-1 mt-2">
+                          {{ review.body }}
+                        </div>
+                        <div class="font-weight-bold mt-2">
+                          Location:
+                        </div>
+                        <div>
+                          {{ review.location }}
+                        </div>
+                      </v-card-text> 
+                    </v-card>
+<!--
+                  </v-skeleton-loader>
+-->
                   <v-pagination
                     v-model="reviewPage"
                     :length="this.reviewPages"
@@ -471,7 +484,8 @@ export default {
         v => !!v || 'Title is required'
       ],
       reviewValid: true,
-      visableReviews: []
+      visableReviews: [],
+      thisReviewsLoading: false
     }
   },
   methods: {
@@ -508,6 +522,10 @@ export default {
       this.reviewTitle = null
       this.reviewValid = true
       this.$refs.reviewForm.resetValidation()
+    },
+    callgetReviews () {
+      this.$store.commit('setreviewsLoading', true)
+      this.$store.dispatch('getReviews', {"recipeId": this.$route.query.id, "offset": 0, "limit": 5})
     }
   },
   computed: {
@@ -522,12 +540,20 @@ export default {
       return this.$store.state.reviewDialog
     },
     reviewPages: function () {
-      return Math.ceil(this.$store.state.reviews.total/5)
+      if ( this.$store.state.reviews === null ) {
+        return null
+      }
+      else {
+        return Math.ceil(this.$store.state.reviews.total/5)
+      }
     },
     reviewsLen: function () {
       if (this.$store.state.reviews != null) {
         return this.$store.state.reviews.reviews.length
       } else {return 0}
+    },
+    reviewsLoading: function () {
+      return this.$store.getters.getreviewsLoading
     }
   },
   watch: {
@@ -542,17 +568,34 @@ export default {
        }
     },
     reviewPage: function (val) {
+      this.$store.commit('setreviewsLoading', true)
       if (this.$store.state.reviews.reviews.length <= ((val * 5) - 5) ) {
         console.log("need data")
         this.$store.dispatch('getReviews', {"recipeId": this.$route.query.id, "offset": this.$store.state.reviews.nextOffset, "limit": 5})
       }
-      if ( (val * 5) > this.$store.state.reviews.total ) {
-        this.visableReviews = this.$store.state.reviews.reviews.slice((val - 1)* 5, this.$store.state.reviews.total)
-      } else {this.visableReviews = this.$store.state.reviews.reviews.slice((val - 1)* 5, val * 5)}
+      else {
+        console.log("didn't need data")
+        this.$store.commit('setreviewsLoading', false)
+        this.visableReviews = this.$store.state.reviews.reviews.slice((this.reviewPage - 1)* 5, this.reviewPage * 5)
+      }
     },
     reviewsLen: function (val) {
       if (val > 0 && val <= 5) {
         this.visableReviews = this.$store.state.reviews.reviews
+      }
+    },
+    reviewsLoading: function (val) {
+      console.log(val)
+      if (val === false) {
+        console.log("val was false")
+        if ( (this.reviewPage * 5) > this.$store.state.reviews.total ) {
+          console.log("short list")
+          this.visableReviews = this.$store.state.reviews.reviews.slice((this.reviewPage - 1)* 5, this.$store.state.reviews.total)
+        } 
+        else {
+          console.log("full list")
+          this.visableReviews = this.$store.state.reviews.reviews.slice((this.reviewPage - 1)* 5, this.reviewPage * 5)
+        }
       }
     }
   },
@@ -564,7 +607,7 @@ export default {
     this.autoRefreshToken()
     setTimeout(function () { vm.$store.dispatch('refreshToken') }, 3300000)
     this.$store.dispatch('getRecipe', this.$route.query.id)
-    this.$store.dispatch('getReviews', {"recipeId": this.$route.query.id, "offset": 0, "limit": 5})
+    this.callgetReviews()
   },
   beforeDestroy: function () {
     this.$store.commit('reSetRecipe')

@@ -46,12 +46,16 @@ const store = new Vuex.Store({
     recipesLoading: false,
     reviews: null,
     reviewDialog: false,
+    reviewsLoading: false,
     searchModel: null,
     submitReviewLoading: false,
     token: null,
     user: null
   },
   mutations: {
+    setreviewsLoading (state, payload) {
+      state.reviewsLoading = payload
+    },
     setsnackbar (state, payload) {
       state.snackbar = payload
     },
@@ -223,9 +227,11 @@ const store = new Vuex.Store({
             }
             if (store.state.reviews === null) {
               commit('setReviews', data)
+              commit('setreviewsLoading', false)
             }
             else {
               commit('setReviewsAdd', data)
+              commit('setreviewsLoading', false)
             }
           })
           .catch(function (error) {
@@ -235,6 +241,7 @@ const store = new Vuex.Store({
               setTimeout(doGet(recipeId, offset, limit, count), 1000)
             }
             commit('setRecipe', null)
+            commit('setreviewsLoading', false)
           })
       }
       var count = 0
@@ -476,6 +483,9 @@ const store = new Vuex.Store({
     },
     snackbarMessage: state => {
       return state.snackbarMessage
+    },
+    getreviewsLoading: state => {
+      return state.reviewsLoading
     }
   }
 })
