@@ -396,47 +396,43 @@
                 <v-tab>Questions</v-tab>
 -->
                 <v-tab-item>
-<!--
-                  <v-skeleton-loader
-                    :loading="this.thisReviewsLoading"
-                    :boilerplate="false"
-                    type="list-item-two-line"
-                  >
--->
-                    <v-card v-for="review in this.visableReviews" :key="review._id">
-                      <v-card-title>
-                        {{ review.authorId }}
-                        <v-spacer></v-spacer>
-                        <div class="subtitle-1">
-                          {{ review.date }}
-                        </div>
-                      </v-card-title>
-                      <v-card-subtitle>
-                        <v-rating
-                          :value="review.score"
-                          color="primary"
-                          half-increments
-                          dense
-                          readonly
-                          size="18"
-                        ></v-rating>
-                      </v-card-subtitle>
-                      <v-card-text>
-                        <div class="font-italic font-weight-medium">Recommended: {{ review.recommend }}</div>
-                        <div class="body-1 mt-2">
-                          {{ review.body }}
-                        </div>
-                        <div class="font-weight-bold mt-2">
-                          Location:
-                        </div>
-                        <div>
-                          {{ review.location }}
-                        </div>
-                      </v-card-text> 
-                    </v-card>
-<!--
-                  </v-skeleton-loader>
--->
+                  <div v-if="reviewsLoading === true">
+                    <v-skeleton-loader
+                      type="list-item-two-line"
+                    ></v-skeleton-loader>
+                  </div>
+                  <v-card v-for="review in this.visableReviews" :key="review._id" v-if="reviewsLoading === false">
+                    <v-card-title>
+                      {{ review.authorId }}
+                      <v-spacer></v-spacer>
+                      <div class="subtitle-1">
+                        {{ review.date }}
+                      </div>
+                    </v-card-title>
+                    <v-card-subtitle>
+                      <v-rating
+                        :value="review.score"
+                        color="primary"
+                        half-increments
+                        dense
+                        readonly
+                        size="18"
+                      ></v-rating>
+                    </v-card-subtitle>
+                    <v-card-text>
+                      <div class="font-italic font-weight-medium">Recommended: {{ review.recommend }}</div>
+                      <div class="body-1 mt-2">
+                        {{ review.body }}
+                      </div>
+                      <div class="font-weight-bold mt-2">
+                        Location:
+                      </div>
+                      <div>
+                        {{ review.location }}
+                      </div>
+                    </v-card-text> 
+                  </v-card>
+
                   <v-pagination
                     v-model="reviewPage"
                     :length="this.reviewPages"
@@ -484,8 +480,7 @@ export default {
         v => !!v || 'Title is required'
       ],
       reviewValid: true,
-      visableReviews: [],
-      thisReviewsLoading: false
+      visableReviews: []
     }
   },
   methods: {
