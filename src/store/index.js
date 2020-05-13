@@ -448,6 +448,20 @@ const store = new Vuex.Store({
     }
   },
   getters: {
+    userMenuItems: state => {
+      if (state.user === null) {
+        return []
+      }
+      else
+      {
+        var items = [
+          { title: "My Profile", to: "/profile/" + state.user.email},
+          { title: "My Recipes", to: "/myrecipes"},
+          { title: "Sign Out", to: "/signout"}
+        ]
+        return items
+      }
+    },
     baseurl: state => {
       return state.baseurl
     },

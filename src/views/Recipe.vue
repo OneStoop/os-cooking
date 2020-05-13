@@ -395,13 +395,15 @@
 <!--
                 <v-tab>Questions</v-tab>
 -->
-                <v-tab-item>
-                  <div v-if="reviewsLoading === true">
+                <v-tab-item v-if="reviewsLoading === true">
+                  <div>
                     <v-skeleton-loader
                       type="list-item-two-line"
                     ></v-skeleton-loader>
                   </div>
-                  <v-card v-for="review in this.visableReviews" :key="review._id" v-if="reviewsLoading === false">
+                </v-tab-item>
+                <v-tab-item v-if="reviewsLoading === false">
+                  <v-card v-for="review in this.visableReviews" :key="review._id">
                     <v-card-title>
                       {{ review.authorId }}
                       <v-spacer></v-spacer>

@@ -46,7 +46,7 @@
         
         <v-list>
           <v-list-item
-            v-for="(item, i) in items"
+            v-for="(item, i) in this.$store.getters.userMenuItems"
             :key="i"
           >
             <v-btn color="info" text :to="item.to">
@@ -138,7 +138,7 @@
         
         <v-list>
           <v-list-item
-            v-for="(item, i) in items"
+            v-for="(item, i) in this.$store.getters.userMenuItems"
             :key="i"
           >
             <v-btn color="info" text :to="item.to">
@@ -169,11 +169,6 @@ export default {
   data () {
     return {
       browse: false,
-      items: [
-      { title: "My Profile", to: "/profile/" + this.$store.getters.user.email},
-      { title: "My Recipes", to: "/myrecipes"},
-      { title: "Sign Out", to: "/signout"}
-      ],
       browseItem: null
     }
   },
