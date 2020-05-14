@@ -55,7 +55,20 @@
             type="card"
           ></v-skeleton-loader>
         </v-col>
-      </v-row>  
+      </v-row> 
+      <v-row no-gutters v-if="noResults">
+        <v-col cols="12">
+          <v-card class="pa-2 ma-2" md="2">
+            <v-img
+              class="white--text"
+              heigh="200px"
+              src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/no-results-cake.jpg"
+            >
+              <v-card-title>No Results, but you can add your own recipe!</v-card-title>
+            </v-img>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-card>
     
     
@@ -110,6 +123,20 @@
           max-width="300"
           type="card"
         ></v-skeleton-loader>
+      </v-col>
+    </v-row>
+
+    <v-row no-gutters v-if="noResults">
+      <v-col cols="12">
+        <v-card class="pa-2 ma-2" md="2">
+          <v-img
+            class="white--text"
+            heigh="300px"
+            src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/no-results-cake.jpg"
+          >
+            <v-card-title>No Results, but you can add your own recipe!</v-card-title>
+          </v-img>
+        </v-card>
       </v-col>
     </v-row>
     </v-card>
@@ -168,6 +195,20 @@ export default {
        else {
         return false
        }
+    },
+    noResults: function () {
+      if ( this.showLoading === false && this.$store.state.recipes !== null ) {
+        if ( this.$store.state.recipes.recipes.length > 0 ) {
+          return false
+        }
+        else {
+          return true
+        }
+      }
+      else {
+        return false
+      }
+
     }
   },
   mounted () {
