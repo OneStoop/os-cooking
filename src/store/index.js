@@ -20,9 +20,12 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   plugins: [vuexLocalStorage.plugin],
   state: {
+    actionRecipeLoading: false,
     addrecipesLoading: false,
     authorName: null,
-    baseurl: 'http://localhost:8081',
+    editRecipeDialog: false,
+    editRecipeType: "",
+    editRecipeLoading: false,
     loading: false,
     myRecipes: [],
     snackbar: false,
@@ -53,6 +56,9 @@ const store = new Vuex.Store({
     user: null
   },
   mutations: {
+    setActionRecipeLoading (state, payload) {
+      state.actionRecipeLoading = payload
+    },
     setreviewsLoading (state, payload) {
       state.reviewsLoading = payload
     },
@@ -82,6 +88,12 @@ const store = new Vuex.Store({
     },
     setreviewDialog (state, payload) {
       state.reviewDialog = payload
+    },
+    seteditRecipeDialog (state, payload) {
+      state.editRecipeDialog = payload
+    },
+    seteditRecipeType (state, payload) {
+      state.editRecipeType = payload
     },
     reSetRecipe (state) {
       var recipe = {
@@ -445,9 +457,76 @@ const store = new Vuex.Store({
       commit('setProfile', null)
       commit('setToken', null)
       router.push('/')
+    },
+    actionRecipe ({ commit }, data) {
+      commit('setActionRecipeLoading', true)
+      var auth = { 'Content-Type': 'application/json', 'Authorization': store.state.token }
+      
+      var url = process.env.VUE_APP_API_SERVER + 'recipes'
+      if (data.recipeId !== null) {
+        url += '/' + data.recipeId
+      }
+      
+      console.log(data.action)
+      console.log(data.recipeId)
+      
+      axios({
+        method: data.action,
+        url: url,
+        data: data.data,
+        headers: auth
+      })
+      .then(function () {
+        console.log("done")
+        var r = store.state.recipe
+        for (const prop in data.data) {
+          r[prop] = data.data[prop]
+        }
+        commit('setRecipes', r)
+        commit('setActionRecipeLoading', false)
+        commit('seteditRecipeDialog', false)
+      })
+      .catch(function (error) {
+        console.log(error)
+        commit('setActionRecipeLoading', false)
+      })
     }
   },
   getters: {
+    recipeSubTypes: state => {
+      var qtype = state.editRecipeType
+      if (qtype.toLowerCase() === "appetizers") {
+        return [{'text': 'Appetizers - Other', 'value': 'appetizers - other'}, {'text': 'Beans and Legumes', 'value': 'beans and legumes'}, {'text': 'Canapes and Bruschetta', 'value': 'canapes and bruschetta'}, {'text': 'Cheese', 'value': 'cheese'}, {'text': 'Deviled Eggs', 'value': 'deviled eggs'}, {'text': 'Dips and Spreads', 'value': 'dips and spreads'}, {'text': 'Fruit', 'value': 'fruit'}, {'text': 'Grilled', 'value': 'grilled'}, {'text': 'Meat', 'value': 'meat'}, {'text': 'Mushrooms', 'value': 'mushrooms'}, {'text': 'Nuts and Seeds', 'value': 'nuts and seeds'}, {'text': 'Olives', 'value': 'olives'}, {'text': 'Pastries', 'value': 'pastries'}, {'text': 'Pickles', 'value': 'pickles'}, {'text': 'Seafood', 'value': 'seafood'}, {'text': 'Snacks', 'value': 'snacks'}, {'text': 'Spicy', 'value': 'spicy'}, {'text': 'Vegetable', 'value': 'vegetable'}, {'text': 'Wraps and Rolls', 'value': 'wraps and rolls'}]
+      }
+      else if (qtype.toLowerCase() === "breads") {
+        return [{'text': 'Breakfast Pastries', 'value': 'breakfast pastries'}, {'text': 'Challah', 'value': 'challah'}, {'text': 'Cornbread', 'value': 'cornbread'}, {'text': 'Flat Bread', 'value': 'flat bread'}, {'text': 'Fruit Bread', 'value': 'fruit bread'}, {'text': 'Holiday Bread', 'value': 'holiday bread'}, {'text': 'Muffins', 'value': 'muffins'}, {'text': 'Popovers and Puddings', 'value': 'popovers and puddings'}, {'text': 'Pumpkin Bread', 'value': 'pumpkin bread'}, {'text': 'Quick Bread', 'value': 'quick bread'}, {'text': 'Rolls and Buns', 'value': 'rolls and buns'}, {'text': 'Rye Bread', 'value': 'rye bread'}, {'text': 'Sourdough and Starters', 'value': 'sourdough and starters'}, {'text': 'Tortillas', 'value': 'tortillas'}, {'text': 'White Bread', 'value': 'white bread'}, {'text': 'Whole Grain Bread', 'value': 'whole grain bread'}, {'text': 'Yeast Bread', 'value': 'yeast bread'}, {'text': 'Zucchini Bread', 'value': 'zucchini bread'}]
+      }
+      else if (qtype.toLowerCase() === "desserts") {
+        return [{'text': 'Cakes', 'value': 'cakes'}, {'text': 'Candies', 'value': 'candies'}, {'text': 'Chocolate', 'value': 'chocolate'}, {'text': 'Cobblers', 'value': 'cobblers'}, {'text': 'Cookies and Bars', 'value': 'cookies and bars'}, {'text': 'Custards and Puddings', 'value': 'custards and puddings'}, {'text': 'Dessert Gelatins', 'value': 'dessert gelatins'}, {'text': 'Dessert Sauces', 'value': 'dessert sauces'}, {'text': 'Dessert - Other', 'value': 'dessert - other'}, {'text': 'Frozen Treats', 'value': 'frozen treats'}, {'text': 'Fruit Crisps', 'value': 'fruit crisps'}, {'text': 'Fruit Crumbles', 'value': 'fruit crumbles'}, {'text': 'Liqueur Flavored Desserts', 'value': 'liqueur flavored desserts'}, {'text': 'Meringues', 'value': 'meringues'}, {'text': 'Mousse', 'value': 'mousse'}, {'text': 'Pies', 'value': 'pies'}, {'text': 'Tiramisu', 'value': 'tiramisu'}, {'text': 'Trifles', 'value': 'trifles'}]
+      }
+      else if (qtype.toLowerCase() === "drinks") {
+          return [{'text': 'Drinks - Other', 'value': 'drinks - other'}, {'text': 'Beer', 'value': 'beer'}, {'text': 'Chocolate', 'value': 'chocolate'}, {'text': 'Cider', 'value': 'cider'}, {'text': 'Cocktails', 'value': 'cocktails'}, {'text': 'Coffee', 'value': 'coffee'}, {'text': 'Eggnog', 'value': 'eggnog'}, {'text': 'Hot Chocolate', 'value': 'hot chocolate'}, {'text': 'Kahlua', 'value': 'kahlua'}, {'text': 'Lemonade', 'value': 'lemonade'}, {'text': 'Liqueurs', 'value': 'liqueurs'}, {'text': 'Mocktails', 'value': 'mocktails'}, {'text': 'Punch', 'value': 'punch'}, {'text': 'Sangria', 'value': 'sangria'}, {'text': 'Shakes and Floats', 'value': 'shakes and floats'}, {'text': 'Smoothies', 'value': 'smoothies'}, {'text': 'Tea', 'value': 'tea'}]
+      }
+      else if (qtype.toLowerCase() === "main dishes") {
+          return [{'text': 'Burgers', 'value': 'burgers'}, {'text': 'Casseroles', 'value': 'casseroles'}, {'text': 'Deep Fried', 'value': 'deep fried'}, {'text': 'Fish and Shellfish', 'value': 'fish and shellfish'}, {'text': 'Grill and BBQ', 'value': 'grill and bbq'}, {'text': 'Main Dish - Other', 'value': 'main dish - other'}, {'text': 'Meat - Steaks and Chops', 'value': 'meat - steaks and chops'}, {'text': 'Meatless', 'value': 'meatless'}, {'text': 'Meatloaf', 'value': 'meatloaf'}, {'text': 'Pasta', 'value': 'pasta'}, {'text': 'Pizza and Calzones', 'value': 'pizza and calzones'}, {'text': 'Poultry', 'value': 'poultry'}, {'text': 'Ribs', 'value': 'ribs'}, {'text': 'Roasts', 'value': 'roasts'}, {'text': 'Sandwiches and Wraps', 'value': 'sandwiches and wraps'}, {'text': 'Slow Cooker', 'value': 'slow cooker'}, {'text': 'Stir-Fries', 'value': 'stir-fries'}, {'text': 'Stuffed Peppers', 'value': 'stuffed peppers'}, {'text': 'Tacos, Burritos and Enchilladas', 'value': 'tacos, burritos and enchilladas'}, {'text': 'Wild Game', 'value': 'wild game'}]
+      }
+      else if (qtype.toLowerCase() === "salads") {
+          return [{'text': 'Bean', 'value': 'bean'}, {'text': 'Coleslaw', 'value': 'coleslaw'}, {'text': 'Croutons and Toppings', 'value': 'croutons and toppings'}, {'text': 'Dressings and Vinaigretts', 'value': 'dressings and vinaigretts'}, {'text': 'Egg Salads', 'value': 'egg salads'}, {'text': 'Fruit Salads', 'value': 'fruit salads'}, {'text': 'Grains', 'value': 'grains'}, {'text': 'Green Salads', 'value': 'green salads'}, {'text': 'Meat and Seafood', 'value': 'meat and seafood'}, {'text': 'Pasta Salads', 'value': 'pasta salads'}, {'text': 'Potato Salads', 'value': 'potato salads'}, {'text': 'Salads - Other', 'value': 'salads - other'}, {'text': 'Vegetable Salads', 'value': 'vegetable salads'}]
+      }
+      else if (qtype.toLowerCase() === "side dishes") {
+          return [{'text': 'Bean and Peas', 'value': 'bean and peas'}, {'text': 'Casseroles', 'value': 'casseroles'}, {'text': 'Dumplings', 'value': 'dumplings'}, {'text': 'French Fries', 'value': 'french fries'}, {'text': 'Grains', 'value': 'grains'}, {'text': 'Potatoes', 'value': 'potatoes'}, {'text': 'Rice', 'value': 'rice'}, {'text': 'Seafood', 'value': 'seafood'}, {'text': 'Sides - Other', 'value': 'sides - other'}, {'text': 'Vegetables', 'value': 'vegetables'}]
+      }
+      else if (qtype.toLowerCase() === "soups") {
+          return [{'text': 'Bean and Legumes', 'value': 'bean and legumes'}, {'text': 'Broth Stocks', 'value': 'broth stocks'}, {'text': 'Cheese Soups', 'value': 'cheese soups'}, {'text': 'Chili', 'value': 'chili'}, {'text': 'Chowders', 'value': 'chowders'}, {'text': 'Cream-style Soups', 'value': 'cream-style soups'}, {'text': 'Dry Soup Mixes', 'value': 'dry soup mixes'}, {'text': 'Meat and Poultry', 'value': 'meat and poultry'}, {'text': 'Noodle', 'value': 'noodle'}, {'text': 'Seafood', 'value': 'seafood'}, {'text': 'Soups - Other', 'value': 'soups - other'}, {'text': 'Stews', 'value': 'stews'}, {'text': 'Vegetable', 'value': 'vegetable'}]
+
+      }
+      else if (qtype.toLowerCase() === "sauces") {
+          return [{'text': 'Marinade', 'value': 'marinade'}, {'text': 'Sauce', 'value': 'sauce'}]
+      }
+      else{
+          return [{"text": "other", "value": "other"}]
+      }
+    },
     userMenuItems: state => {
       if (state.user === null) {
         return []

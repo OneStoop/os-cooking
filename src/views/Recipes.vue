@@ -28,7 +28,7 @@
             <v-card-title>{{ d.title }}</v-card-title>
             
             <v-card-actions>
-            <v-rating
+              <v-rating
                 :value="d.rating"
                 color="amber"
                 dense
@@ -36,14 +36,7 @@
                 readonly
                 size="14"
               ></v-rating>
-              <div class="grey--text ml-4">{{ d.rating }} ({{ d.ratingCount }})</div>
-              <v-spacer></v-spacer>
-              <v-btn icon>
-                <v-icon>bookmarkt</v-icon>
-              </v-btn>
-              <v-btn icon>
-                <v-icon>mdi-share-variant</v-icon>
-              </v-btn>
+              <div class="grey--text ml-2">{{ d.ratingCount }} Reviews</div>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -95,7 +88,7 @@
           <v-card-title>{{ d.title }}</v-card-title>
           
           <v-card-actions>
-          <v-rating
+            <v-rating
               :value="d.rating"
               color="amber"
               dense
@@ -103,14 +96,7 @@
               readonly
               size="14"
             ></v-rating>
-            <div class="grey--text ml-4">{{ d.rating }} ({{ d.ratingCount }})</div>
-            <v-spacer></v-spacer>
-            <v-btn icon>
-              <v-icon>bookmarkt</v-icon>
-            </v-btn>
-            <v-btn icon>
-              <v-icon>mdi-share-variant</v-icon>
-            </v-btn>
+            <div class="grey--text ml-2">{{ d.ratingCount }} Reviews</div>
           </v-card-actions>
         </v-card>
       </v-col>

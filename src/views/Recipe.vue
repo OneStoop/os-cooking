@@ -45,8 +45,13 @@
     <v-card class="hidden-md-and-up" v-if="this.$store.state.recipe.title != ''">
       <v-card-title>{{ this.$store.state.recipe.title }}</v-card-title>
       <v-row dense>
-        <v-btn class="pa-2 ma-2" v-if="isOwner === false">Bookmark</v-btn>
-        <v-icon class="ml-4 mr-1">bookmark</v-icon>
+        <v-btn
+          class="pa-2 ma-2"
+          @click.stop="openEditRecipe"
+          v-if="isOwner === true"
+        >
+          <v-icon>create</v-icon>Edit
+        </v-btn>
         <v-rating
           :value="this.$store.state.recipe.rating"
           color="amber"
@@ -56,7 +61,7 @@
           size="14"
           class="pl-2 ml-2 mt-3"
         ></v-rating>
-        <div class="grey--text ml-1 mt-3">{{ this.$store.state.recipe.rating }} ({{ this.$store.state.recipe.ratingCount }})</div>
+        <div class="grey--text ml-1 mt-3">{{ this.$store.state.recipe.ratingCount }} Reviews</div>
       </v-row>
       <v-row dense>
         <v-icon class="ml-4 mt-2">alarm</v-icon><p class="ma-2">Ready in {{ this.$store.state.recipe.prepTime + this.$store.state.recipe.cookTime }} Minutes</p>
@@ -169,8 +174,13 @@
         <v-col cols="12">
           <v-card flat>
             <v-card-actions>
-              <v-btn class="pa-2 ma-2" v-if="isOwner === false">Bookmark</v-btn>
-              <v-icon class="ml-4 mr-1">bookmark</v-icon>
+              <v-btn
+                class="pa-2 ma-2"
+                @click.stop="openEditRecipe"
+                v-if="isOwner === true"
+              >
+                <v-icon>create</v-icon>Edit
+              </v-btn>
               <v-rating
                 :value="this.$store.state.recipe.rating"
                 color="amber"
@@ -180,7 +190,7 @@
                 size="14"
                 class="pl-2 ml-2"
               ></v-rating>
-              <div class="grey--text ml-1">{{ this.$store.state.recipe.rating }} ({{ this.$store.state.recipe.ratingCount }})</div>
+              <div class="grey--text ml-1">{{ this.$store.state.recipe.ratingCount }} Reviews</div>
               
               <v-spacer></v-spacer>
               
@@ -223,14 +233,6 @@
             <p v-if="this.$store.state.authorName">By: {{ this.$store.state.authorName }}</p>
             {{ this.$store.state.recipe.description }}
             <v-card-actions>
-              <v-tooltip bottom v-if="isOwner">
-                <template v-slot:activator="{ on }">
-                  <v-chip v-on="on">
-                    <v-icon>create</v-icon>
-                  </v-chip>
-                </template>
-                <span>Edit Description</span>
-              </v-tooltip>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -240,14 +242,6 @@
         <v-col cols="8">
           <p class="title">
             Ingredients
-            <v-tooltip bottom v-if="isOwner">
-                <template v-slot:activator="{ on }">
-                  <v-chip v-on="on">
-                    <v-icon>create</v-icon>
-                  </v-chip>
-                </template>
-                <span>Edit Ingredients</span>
-              </v-tooltip>  
           </p>
           
           <v-simple-table>
@@ -264,14 +258,6 @@
         <v-col cols="8">
           <p class="title">
             Directions
-            <v-tooltip bottom v-if="isOwner">
-                <template v-slot:activator="{ on }">
-                  <v-chip v-on="on">
-                    <v-icon>create</v-icon>
-                  </v-chip>
-                </template>
-                <span>Edit Directions</span>
-              </v-tooltip>  
           </p>
           <v-simple-table>
             <template v-slot:default>
@@ -315,6 +301,7 @@
                 class="ma-2"
                 color="primary"
                 @click.stop="openReviewModel"
+                v-if="isOwner === false"
               >
                 Write a Review
               </v-btn>
@@ -454,6 +441,207 @@
     <v-snackbar :value="this.$store.getters.snackbar" :timeout="3000">
       {{ this.$store.getters.snackbarMessage }}
     </v-snackbar>
+    
+    <v-dialog v-model="this.$store.state.editRecipeDialog" persistent max-width="800">
+      <v-card>
+        <v-card-title>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12">
+              <v-text-field
+                label="Recipe title"
+                type="text"
+                v-model="title"
+                outlined
+                shaped
+                required
+              >
+              </v-text-field>
+            </v-col>
+            <v-col cols="4">
+              <v-text-field
+                label="Prep Time minutes"
+                type="text"
+                v-model="prepTime"
+                required>
+              </v-text-field>
+            </v-col>
+            <v-col cols="4">
+              <v-text-field
+                label="Cook Time minutes"
+                type="text"
+                v-model="cookTime"
+                required>
+              </v-text-field>
+            </v-col>
+            <v-col cols="4">
+              <v-text-field
+                label="Servings"
+                type="text"
+                v-model="servings"
+                required>
+              </v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-select
+                autocomplete
+                label="Recipe Type"
+                :items="this.$store.state.recipeTypes.types"
+                v-model="$store.state.editRecipeType"
+                required>
+              </v-select>
+            </v-col>
+
+            <v-col cols="3">
+              <v-select
+                autocomplete
+                label="Sub Type"
+                :items="recipeSubTypes"
+                item-text="text"
+                item-value="value"
+                v-model="recipeSubType"
+                :loading="recipeSubTypesLoading"
+                required>
+              </v-select>
+            </v-col>
+            
+            <v-col cols="3">
+              <v-select
+                label="Cuisine"
+                :items="cuisineType.types"
+                item-text="text"
+                item-value="value"
+                v-model="cusine"
+                required>
+              </v-select>
+            </v-col>
+            
+            <v-col cols="3">
+              <v-select
+                label="Meal Time"
+                :items="mealtimeItems.types"
+                v-model="mealTime"
+                required>
+              </v-select>
+            </v-col>
+            
+            <v-col cols="12">
+              <div class="title">Ingredients <div class="font-weight-thin">(click to edit in column)</div></div>
+            </v-col>
+            
+            <v-col cols="12">
+              <v-simple-table>
+                <template v-slot:default>
+                  <tbody>
+                    <tr v-for="item in ingredients" :key="item.id">
+                      <td>
+                        <v-checkbox
+                          v-model="selected"
+                          :value="item.id"
+                        ></v-checkbox>
+                      </td>
+                      <td>
+                        <v-text-field
+                          v-model="item.quantity"
+                          label="Quantity"
+                        ></v-text-field>
+                      </td>
+                      <td>
+                        <v-text-field
+                          v-model="item.measure"
+                          label="Measure"
+                        ></v-text-field>
+                      </td>
+                      <td>
+                        <v-text-field
+                          v-model="item.item"
+                          label="Item"
+                        ></v-text-field>
+                      </td>
+                      <td>
+                        <v-text-field
+                          v-model="item.note"
+                          label="Note"
+                        ></v-text-field>
+                      </td>
+                     </tr>
+                   </tbody>
+                 </template>
+              </v-simple-table>
+            </v-col>
+            
+            <v-col cols="12">
+              <v-btn @click="addIngredientLine()" class="ma-2"><v-icon left>add_box</v-icon>add ingredient line</v-btn>
+              <v-btn color="red lighten-2" @click="deleteItem" class="ma-2">Delete</v-btn>
+            </v-col>
+            
+            <v-col cols="12">
+              <v-textarea
+                label="Description"
+                type="text"
+                v-model="description"
+                required>
+              </v-textarea>
+            </v-col>
+            
+             <v-col cols="12">
+              <v-textarea
+                label="Directions"
+                type="text"
+                v-model="directions"
+                required>
+              </v-textarea>
+            </v-col>
+            
+            <v-col cols="12">
+              <v-textarea
+                label="Notes (optional)"
+                type="text"
+                v-model="notes">
+              </v-textarea>
+            </v-col>
+            
+            <v-col cols="12">
+              <v-text-field
+                label="Source (optional)"
+                type="text"
+                v-model="source">
+              </v-text-field>
+            </v-col>
+            
+            <v-col cols="3">
+              <v-select
+                label="Visibility"
+                :items="['Public', 'Private']"
+                v-model="visibility"
+                required>
+              </v-select>
+            </v-col>
+            
+
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="ma-2"
+            color="primary"
+            :loading="this.$store.state.actionRecipeLoading"
+            :disabled="this.$store.state.actionRecipeLoading"
+            @click="startEditSubmit"
+          >
+            Update
+          </v-btn>
+          <v-btn
+            class="ma-2"
+            color="primary"
+            @click="cancleEditRecipe"
+          >
+            Cancle
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script>
@@ -467,6 +655,9 @@ export default {
           href: '/',
         }
       ],
+      description: null,
+      directions: null,
+      ingredients: [],
       reviewPage: 1,
       questionPage: 1,
       reviewLocation: null,
@@ -482,15 +673,107 @@ export default {
         v => !!v || 'Title is required'
       ],
       reviewValid: true,
-      visableReviews: []
+      notes: null,
+      visableReviews: [],
+      title: null,
+      prepTime: null,
+      cookTime: null,
+      selected: null,
+      servings: null,
+      source: null,
+      recipeSubTypes: [],
+      recipeSubType: null,
+      recipeSubTypesLoading: null,
+      cusine: null,
+      mealTime: null,
+      cuisineType: {
+        types:
+          [{'text': 'African', 'value': 'african'}, {'text': 'Asian', 'value': 'asian'}, {'text': 'Chinese', 'value': 'chinese'}, {'text': 'Creole and Cajun', 'value': 'creole and cajun'}, {'text': 'English', 'value': 'english'}, {'text': 'French', 'value': 'french'}, {'text': 'Greek', 'value': 'greek'}, {'text': 'German', 'value': 'german'}, {'text': 'Indian', 'value': 'indian'}, {'text': 'Irish', 'value': 'irish'}, {'text': 'Italian', 'value': 'italian'}, {'text': 'Mexican', 'value': 'mexican'}, {'text': 'Southern', 'value': 'southern'}, {'text': 'Southwest', 'value': 'southwest'}, {'text': 'Spanish', 'value': 'spanish'}, {'text': 'Thai', 'value': 'thai'}, {'text': 'other', 'value': 'other'}]
+      },
+      mealtimeItems: {
+        types:
+          [
+            "Breakfast",
+            "Lunch",
+            "Dinner",
+            "Brunch",
+            "other"
+          ]
+      },
+      visibility: null
     }
   },
   methods: {
     autoRefreshToken () {
       this.$store.dispatch('refreshToken')
     },
+    deleteItem () {
+      for(var i = 0; i < this.selected.length; i++) {
+        const index = this.ingredients.indexOf(this.selected[i])
+        this.ingredients.splice(index, 1)
+      }
+      this.deleteDialog = false
+      this.selected = []
+    },
+    addIngredientLine () {
+      var found = true
+      var addThis = 0
+      while (found) {
+        var id = this.ingredients.length + addThis
+        found = this.ingredients.some(el => el.id === id)
+        console.log(id)
+        addThis += 1
+      }
+      this.ingredients.push({
+          "quantity": "",
+          "measure": "",
+          "item": "",
+          "note": "",
+          "id": id
+        })
+    },
     openReviewModel () {
       this.$store.commit('setreviewDialog', true)
+    },
+    openEditRecipe () {
+      this.title = this.$store.state.recipe.title
+      this.prepTime = this.$store.state.recipe.prepTime
+      this.cookTime = this.$store.state.recipe.cookTime
+      this.servings = this.$store.state.recipe.servings
+      var t = this.$store.state.recipe.recipeType[0].toUpperCase() + this.$store.state.recipe.recipeType.slice(1)
+      this.$store.commit('seteditRecipeType', t)
+      this.getRecipeSubTypes()
+      this.recipeSubType = this.$store.state.recipe.recipeSubType
+      this.cusine = this.$store.state.recipe.cusine
+      this.mealTime = this.$store.state.recipe.mealTime
+      this.ingredients = this.$store.state.recipe.ingredients
+      this.description = this.$store.state.recipe.description
+      this.directions = this.$store.state.recipe.directions
+      this.notes = this.$store.state.recipe.notes
+      this.source = this.$store.state.recipe.source
+      var v = this.$store.state.recipe.visibility[0].toUpperCase() + this.$store.state.recipe.visibility.slice(1)
+      this.visibility = v
+      this.$store.commit('seteditRecipeDialog', true)
+    },
+    startEditSubmit () {
+      var data = {'data':{}}
+      data.data.title = this.title
+      data.data.prepTime = this.prepTime
+      data.data.cookTime = this.cookTime
+      data.data.servings = this.servings
+      data.data.recipeSubType = this.recipeSubType
+      data.data.cusine = this.cusine
+      data.data.mealTime = this.mealTime
+      data.data.ingredients = this.ingredients
+      data.data.description = this.description
+      data.data.notes = this.notes
+      data.data.source = this.source
+      data.data.visibility = this.visibility
+      
+      data.recipeId = this.$route.query.id
+      data.action = 'patch'
+      
+      this.$store.dispatch('actionRecipe', data)
     },
     startReviewSubmit () {
       if (this.reviewRating === null) {
@@ -509,6 +792,9 @@ export default {
         this.$store.dispatch('doSubmitReview', data)
       }
     },
+    cancleEditRecipe () {
+      this.$store.commit('seteditRecipeDialog', false)
+    },
     cancleReview () {
       this.$store.commit('setreviewDialog', false)
       this.reviewLocation = null
@@ -523,6 +809,13 @@ export default {
     callgetReviews () {
       this.$store.commit('setreviewsLoading', true)
       this.$store.dispatch('getReviews', {"recipeId": this.$route.query.id, "offset": 0, "limit": 5})
+    },
+    getRecipeSubTypes () {
+      console.log("doing get")
+      this.recipeSubTypes = []
+      this.recipeSubTypesLoading = true
+      this.recipeSubTypes = this.$store.getters.recipeSubTypes
+      this.recipeSubTypesLoading = false
     }
   },
   computed: {
@@ -551,9 +844,19 @@ export default {
     },
     reviewsLoading: function () {
       return this.$store.getters.getreviewsLoading
+    },
+    rcpType: function () {
+      return this.$store.state.editRecipeType
     }
   },
   watch: {
+    rcpType: function () {
+      this.getRecipeSubTypes()
+      var t = this.$store.state.recipe.recipeType[0].toUpperCase() + this.$store.state.recipe.recipeType.slice(1)
+      if (this.$store.state.editRecipeType !== t) {
+        this.recipeSubType = ""
+      }
+    },
     reviewRating: function (val) {
       if (val != null) {
         this.reviewRatingError = false   
@@ -609,6 +912,7 @@ export default {
   beforeDestroy: function () {
     this.$store.commit('reSetRecipe')
     this.$store.commit('setReviews', null)
+    this.$store.commit('seteditRecipeDialog', false)
     this.visableReviews = []
   }
 }
