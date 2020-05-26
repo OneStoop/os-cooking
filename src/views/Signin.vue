@@ -30,8 +30,13 @@
                 required></v-text-field>
 
               <v-btn color="cyan" type="submit">Sign In</v-btn>
-
         </form>
+      </v-col>
+      
+      <v-col cols="12" class="text-center">
+        <router-link :to="'/signup'" style="text-decoration: none;" class="mr-4">
+          Don't have an account?  Sign up here
+        </router-link>
       </v-col>
   </v-container>
 </template>

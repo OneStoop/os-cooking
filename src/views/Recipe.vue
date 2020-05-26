@@ -97,16 +97,6 @@
         <v-col cols="12">
         <v-card class="ma-4">
           {{ this.$store.state.recipe.description }}
-          <v-card-actions>
-            <v-tooltip bottom v-if="isOwner">
-              <template v-slot:activator="{ on }">
-                <v-chip v-on="on">
-                  <v-icon>create</v-icon>
-                </v-chip>
-              </template>
-              <span>Edit Description</span>
-            </v-tooltip>
-          </v-card-actions>
         </v-card>
         </v-col>
       </v-row>
@@ -114,14 +104,6 @@
       <v-row>
         <p class="title ml-4">
           Ingredients
-          <v-tooltip bottom v-if="isOwner">
-              <template v-slot:activator="{ on }">
-                <v-chip v-on="on">
-                  <v-icon>create</v-icon>
-                </v-chip>
-              </template>
-              <span>Edit Ingredients</span>
-            </v-tooltip>  
         </p>
       </v-row>
         
@@ -140,14 +122,6 @@
       <v-row>
         <p class="title ml-4 mt-4">
           Directions
-          <v-tooltip bottom v-if="isOwner">
-              <template v-slot:activator="{ on }">
-                <v-chip v-on="on">
-                  <v-icon>create</v-icon>
-                </v-chip>
-              </template>
-              <span>Edit Directions</span>
-            </v-tooltip>  
         </p>
       </v-row>
       

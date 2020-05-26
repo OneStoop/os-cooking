@@ -14,6 +14,7 @@ const router = new VueRouter({
     { path: '/recipes', component: loadView('Recipes') },
     { path: '/search', component: loadView('Search') },
     { path: '/signin', component: loadView('Signin'), meta: { requiresNoAuth: true } },
+    { path: '/signup', component: loadView('Signup'), meta: { requiresNoAuth: true } },
     { path: '/signout', component: loadView('Signout'), meta: { requiresAuth: true } }
   ]
 })

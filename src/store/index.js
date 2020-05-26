@@ -26,6 +26,7 @@ const store = new Vuex.Store({
     editRecipeDialog: false,
     editRecipeType: "",
     editRecipeLoading: false,
+    error: null,
     loading: false,
     myRecipes: [],
     snackbar: false,
@@ -457,6 +458,35 @@ const store = new Vuex.Store({
       commit('setProfile', null)
       commit('setToken', null)
       router.push('/')
+    },
+    userSignUp ({ commit }, payload) {
+      commit('setLoading', true)
+      firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
+        .then(firebaseUser => {
+          commit('setUser', { email: firebaseUser.user.email })
+          commit('setLoading', false)
+          commit('setToken', firebaseUser.user._lat)
+          axios.post(process.env.VUE_APP_API_SERVER + `users?token=` + firebaseUser.user._lat, {
+            body: ''
+          })
+            // .then(response => {})
+            .then()
+            .catch(e => {
+              var user = firebase.auth().currentUser
+              user.delete().then(function () {
+                // User deleted.
+              }).catch(function () {
+              })
+              commit('setUser', null)
+              router.push('/signup')
+              this.errors.push(e)
+            })
+          router.push('/feed')
+        })
+        .catch(error => {
+          commit('setError', error.message)
+          commit('setLoading', false)
+        })
     },
     actionRecipe ({ commit }, data) {
       commit('setActionRecipeLoading', true)
