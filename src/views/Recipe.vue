@@ -821,9 +821,22 @@ export default {
     },
     rcpType: function () {
       return this.$store.state.editRecipeType
+    },
+    loadedRecipe: function () {
+      if (this.$store.state.recipe !== null) {
+        return this.$store.state.recipe
+      }
+      else {
+        return null
+      }
     }
   },
   watch: {
+    loadedRecipe: function () {
+      if (this.loadedRecipe !== null) {
+        document.title = this.$store.state.recipe.title
+      }
+    },
     rcpType: function () {
       this.getRecipeSubTypes()
       var t = this.$store.state.recipe.recipeType[0].toUpperCase() + this.$store.state.recipe.recipeType.slice(1)
@@ -888,6 +901,7 @@ export default {
     this.$store.commit('setReviews', null)
     this.$store.commit('seteditRecipeDialog', false)
     this.visableReviews = []
+    document.title = "Recipes - One Stoop"
   }
 }
 </script>
