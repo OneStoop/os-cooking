@@ -31,7 +31,10 @@
         <v-icon>home</v-icon>
       </router-link>
       
-      <v-btn text v-if="this.$store.getters.isNotAuthenticated" :to="'/signin/'">Sign In</v-btn>
+      <v-btn text small v-if="this.$store.getters.isNotAuthenticated" :to="'/signin/'">Sign In</v-btn>
+      |
+      <v-btn text small v-if="this.$store.getters.isNotAuthenticated" :to="'/signup/'">Sign Up</v-btn>
+
       
       <v-menu bottom left v-if="this.$store.getters.isAuthenticated">
         <template v-slot:activator="{ on }">
@@ -123,8 +126,10 @@
       <v-btn @click="goToSearch()" icon><v-icon>search</v-icon></v-btn>
       <v-spacer />
 
-      <v-btn text v-if="this.$store.getters.isNotAuthenticated" :to="'/signin/'">Sign In</v-btn>
-      
+      <v-btn text small v-if="this.$store.getters.isNotAuthenticated" :to="'/signin/'">Sign In</v-btn>
+      |
+      <v-btn text small v-if="this.$store.getters.isNotAuthenticated" :to="'/signup/'">Sign Up</v-btn>
+
       <v-menu bottom left v-if="this.$store.getters.isAuthenticated">
         <template v-slot:activator="{ on }">
           <v-btn

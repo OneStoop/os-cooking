@@ -471,7 +471,7 @@ const store = new Vuex.Store({
           })
             // .then(response => {})
             .then()
-            .catch(e => {
+            .catch(function() {
               var user = firebase.auth().currentUser
               user.delete().then(function () {
                 // User deleted.
@@ -479,9 +479,8 @@ const store = new Vuex.Store({
               })
               commit('setUser', null)
               router.push('/signup')
-              this.errors.push(e)
             })
-          router.push('/feed')
+          router.push('/')
         })
         .catch(error => {
           commit('setError', error.message)
