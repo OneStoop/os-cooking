@@ -10,6 +10,7 @@ const router = new VueRouter({
   routes: [
     { path: '/', component: loadView('Home') },
     { path: '/myrecipes', component: loadView('Myrecipes') },
+    { path: '/profile', component: loadView('Profile') },
     { path: '/recipe', component: loadView('Recipe') },
     { path: '/recipes', component: loadView('Recipes') },
     { path: '/search', component: loadView('Search') },
