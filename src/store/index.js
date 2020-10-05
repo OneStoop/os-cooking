@@ -466,7 +466,7 @@ const store = new Vuex.Store({
           commit('setUser', { email: firebaseUser.user.email })
           commit('setLoading', false)
           commit('setToken', firebaseUser.user._lat)
-          axios.post(process.env.VUE_APP_API_SERVER + `users?token=` + firebaseUser.user._lat, {
+          axios.post(process.env.VUE_APP_API_SERVER + `users?token=` + firebaseUser.user._lat + '&name=' + payload.name, {
             body: ''
           })
             // .then(response => {})

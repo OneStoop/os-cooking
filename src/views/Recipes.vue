@@ -13,14 +13,14 @@
             <div v-if="d.images.length === 1">
               <v-img
                 :src="d.images[0].url"
-                lazy-src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+                lazy-src="https://storage.googleapis.com/onestoopimages01/NoImage.jpeg"
                 height="300px"
                 
               ></v-img>
             </div>
             <div v-if="d.images.length === 0">
               <v-img
-                src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+                src="https://storage.googleapis.com/onestoopimages01/NoImage.jpeg"
                 height="300px"
               ></v-img>
             </div>
@@ -55,7 +55,7 @@
             <v-img
               class="white--text"
               heigh="200px"
-              src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/no-results-cake.jpg"
+              src="https://storage.googleapis.com/onestoopimages01/no-results-cake.jpg"
             >
               <v-card-title>No Results, but you can add your own recipe!</v-card-title>
             </v-img>
@@ -73,14 +73,14 @@
           <div v-if="d.images.length === 1">
             <v-img
               :src="d.images[0].url"
-              lazy-src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+              lazy-src="https://storage.googleapis.com/onestoopimages01/NoImage.jpeg"
               height="300px"
               
             ></v-img>
           </div>
           <div v-if="d.images.length === 0">
             <v-img
-              src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+              src="https://storage.googleapis.com/onestoopimages01/NoImage.jpeg"
               height="300px"
             ></v-img>
           </div>
@@ -118,7 +118,7 @@
           <v-img
             class="white--text"
             heigh="300px"
-            src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/no-results-cake.jpg"
+            src="https://storage.googleapis.com/onestoopimages01/no-results-cake.jpg"
           >
             <v-card-title>No Results, but you can add your own recipe!</v-card-title>
           </v-img>

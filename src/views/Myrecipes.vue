@@ -32,14 +32,14 @@
               <div v-if="d.images.length === 1">
                 <v-img
                   :src="d.images[0].url"
-                  lazy-src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+                  lazy-src="https://storage.googleapis.com/onestoopimages01/NoImage.jpeg"
                   height="300px"
                   
                 ></v-img>
               </div>
               <div v-if="d.images.length === 0">
                 <v-img
-                  src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/NoImage.jpeg"
+                  src="https://storage.googleapis.com/onestoopimages01/NoImage.jpeg"
                   height="300px"
                 ></v-img>
               </div>

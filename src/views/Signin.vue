@@ -12,7 +12,7 @@
       <v-col cols="4"></v-col>
       <v-col cols="4" class="text-center">
         <v-btn @click="googleSignUP()" icon class="ml-20">
-          <v-img src="https://onestoop00001.nyc3.digitaloceanspaces.com/onestoop00001/btn_google_signin_light_normal_web.png"></v-img>
+          <v-img src="https://storage.googleapis.com/onestoopimages01/btn_google_signin_light_normal_web.png"></v-img>
         </v-btn>
       </v-col>
     </v-row>
