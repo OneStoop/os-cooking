@@ -28,7 +28,7 @@
         <v-row no-gutters v-if="this.$store.state.recipesLoading === false">
           <v-col cols="12" md="6" lg="4" xl="3" v-for="d in this.$store.state.myRecipes.recipes" :key="d._id">
             <v-card class="pa-2 ma-2" md="2">
-              <router-link :to="'/recipe?id=' + d._id">
+              <router-link :to="'/recipe/' + d._id + '/' + d.title.replace(/\s+/g, '-').toLowerCase()">
               <div v-if="d.images.length === 1">
                 <v-img
                   :src="d.images[0].url"

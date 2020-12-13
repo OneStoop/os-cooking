@@ -9,7 +9,7 @@
       <v-row no-gutters v-if="this.$store.getters.getrecipesLoading === false">
         <v-col cols="12" v-for="d in this.$store.state.recipes.recipes" :key="d._id">
           <v-card class="pa-2 ma-2" md="2">
-            <router-link :to="'/recipe?id=' + d._id">
+            <router-link :to="'/recipe/' + d._id + '/' + d.title.replace(/\s+/g, '-').toLowerCase()">
             <div v-if="d.images.length === 1">
               <v-img
                 :src="d.images[0].url"
@@ -69,7 +69,7 @@
     <v-row no-gutters v-if="this.$store.getters.getrecipesLoading === false">
       <v-col cols="3" v-for="d in this.$store.state.recipes.recipes" :key="d._id">
         <v-card class="pa-2 ma-2" md="2">
-          <router-link :to="'/recipe?id=' + d._id">
+          <router-link :to="'/recipe/' + d._id + '/' + d.title.replace(/\s+/g, '-').toLowerCase()">
           <div v-if="d.images.length === 1">
             <v-img
               :src="d.images[0].url"

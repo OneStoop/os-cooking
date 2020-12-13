@@ -23,6 +23,7 @@ export default {
     }
   },
   mounted () {
+    document.title = "Recipes - One Stoop"
     let vm = this
     this.autoRefreshToken()
     setTimeout(function () { vm.$store.dispatch('refreshToken') }, 3300000)

@@ -8,10 +8,11 @@ function loadView(view) {
 const router = new VueRouter({
   mode: 'history',
   routes: [
-    { path: '/', component: loadView('Home') },
+    { path: '/', name: 'home', component: loadView('Home') },
     { path: '/myrecipes', component: loadView('Myrecipes') },
-    { path: '/profile', component: loadView('Profile') },
-    { path: '/recipe', component: loadView('Recipe') },
+    { path: '/profile/:id', component: loadView('Profile') },
+    { path: '/recipe/:id', component: loadView('Recipe') },
+    { path: '/recipe/:id/:title', name: 'recipe', component: loadView('Recipe') },
     { path: '/recipes', component: loadView('Recipes') },
     { path: '/search', component: loadView('Search') },
     { path: '/signin', component: loadView('Signin'), meta: { requiresNoAuth: true } },

@@ -52,6 +52,13 @@
         >
           <v-icon>create</v-icon>Edit
         </v-btn>
+        <v-btn
+          class="pa-2 ma-2"
+          @click.stop="openDeleteDialog"
+          v-if="isOwner === true"
+        >
+          <v-icon>delete_sweep</v-icon>Delete
+        </v-btn>
         <v-rating
           :value="this.$store.state.recipe.rating"
           color="amber"
@@ -154,6 +161,13 @@
                 v-if="isOwner === true"
               >
                 <v-icon>create</v-icon>Edit
+              </v-btn>
+              <v-btn
+                class="pa-2 ma-2"
+                @click.stop="openDeleteDialog"
+                v-if="isOwner === true"
+              >
+                <v-icon>delete_sweep</v-icon>Delete
               </v-btn>
               <v-rating
                 :value="this.$store.state.recipe.rating"
@@ -616,9 +630,37 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    
+    <v-dialog v-model="this.deleteRecipeDialog" persistent max-width="800">
+      <v-card>
+        <v-card-title>
+          Delete Recipe
+        </v-card-title>
+        <v-card-text>
+          Are you sure?  All data related to this recipe will be deleted.  This cannot be undone!
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            class="ma-2"
+            color="error"
+            @click="cancleDeleteRecipe"
+          >
+            Delete
+          </v-btn>
+          <v-btn
+            class="ma-2"
+            color="primary"
+            @click="cancleDeleteRecipe"
+          >
+            Cancle
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script>
+import router from '../router'
 export default {
   data () {
     return {
@@ -629,6 +671,8 @@ export default {
           href: '/',
         }
       ],
+      deleteRecipeDialog: false,
+      deleteDialog: false,
       description: null,
       directions: null,
       ingredients: [],
@@ -680,6 +724,12 @@ export default {
   methods: {
     autoRefreshToken () {
       this.$store.dispatch('refreshToken')
+    },
+    openDeleteDialog () {
+      this.deleteRecipeDialog = true
+    },
+    cancleDeleteRecipe () {
+      this.deleteRecipeDialog = false
     },
     deleteItem () {
       for(var i = 0; i < this.selected.length; i++) {
@@ -744,8 +794,9 @@ export default {
       data.data.source = this.source
       data.data.visibility = this.visibility
       
-      data.recipeId = this.$route.query.id
+      data.recipeId = this.$route.params.id
       data.action = 'patch'
+      console.log(data)
       
       this.$store.dispatch('actionRecipe', data)
     },
@@ -753,13 +804,12 @@ export default {
       if (this.reviewRating === null) {
         this.reviewRatingError = true
       }
-      
-      if (this.$refs.reviewForm.validate()) {
+      else if (this.$refs.reviewForm.validate()) {
         var data = {
             "title": this.reviewTitle,
             "body": this.reviewReview,
             "score": this.reviewRating,
-            "recipeId": this.$route.query.id,
+            "recipeId": this.$route.params.id,
             "recommend": this.reviewRecommend,
             "location": this.reviewLocation
         }
@@ -782,7 +832,7 @@ export default {
     },
     callgetReviews () {
       this.$store.commit('setreviewsLoading', true)
-      this.$store.dispatch('getReviews', {"recipeId": this.$route.query.id, "offset": 0, "limit": 5})
+      this.$store.dispatch('getReviews', {"recipeId": this.$route.params.id, "offset": 0, "limit": 5})
     },
     getRecipeSubTypes () {
       console.log("doing get")
@@ -834,6 +884,11 @@ export default {
   watch: {
     loadedRecipe: function () {
       if (this.loadedRecipe !== null) {
+        if (this.$route.params.title == undefined) {
+          router.push({ name: 'recipe', params: { id: this.$route.params.id, title: this.$store.state.recipe.title.replace(/\s+/g, '-').toLowerCase()}})
+        } else if (this.$store.state.recipe.title.replace(/\s+/g, '-').toLowerCase() !== this.$route.params.title.replace(/\s+/g, '-').toLowerCase()) {
+          router.push({ name: 'recipe', params: { id: this.$route.params.id, title: this.$store.state.recipe.title.replace(/\s+/g, '-').toLowerCase() }})
+        }
         document.title = this.$store.state.recipe.title
       }
     },
@@ -858,7 +913,7 @@ export default {
       this.$store.commit('setreviewsLoading', true)
       if (this.$store.state.reviews.reviews.length <= ((val * 5) - 5) ) {
         console.log("need data")
-        this.$store.dispatch('getReviews', {"recipeId": this.$route.query.id, "offset": this.$store.state.reviews.nextOffset, "limit": 5})
+        this.$store.dispatch('getReviews', {"recipeId": this.$route.params.id, "offset": this.$store.state.reviews.nextOffset, "limit": 5})
       }
       else {
         console.log("didn't need data")
@@ -893,7 +948,7 @@ export default {
     this.$store.commit('setReviews', null)
     this.autoRefreshToken()
     setTimeout(function () { vm.$store.dispatch('refreshToken') }, 3300000)
-    this.$store.dispatch('getRecipe', this.$route.query.id)
+    this.$store.dispatch('getRecipe', this.$route.params.id)
     this.callgetReviews()
   },
   beforeDestroy: function () {

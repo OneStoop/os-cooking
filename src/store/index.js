@@ -215,6 +215,8 @@ const store = new Vuex.Store({
               count++
               store.dispatch('refreshToken')
               setTimeout(doGet(recipeId, count), 1000)
+            } else {
+              router.push({ name: 'home'})
             }
             commit('setRecipe', null)
           })
@@ -562,8 +564,9 @@ const store = new Vuex.Store({
       }
       else
       {
+        var userId = state.profile._id.split("/")
         var items = [
-          { title: "My Profile", to: "/profile/" + state.user.email},
+          { title: "My Profile", to: "/profile/" + userId[1]},
           { title: "My Recipes", to: "/myrecipes"},
           { title: "Sign Out", to: "/signout"}
         ]
