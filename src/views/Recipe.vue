@@ -250,8 +250,8 @@
           <v-simple-table>
             <template v-slot:default>
               <tbody>
-                <tr v-for="item in $store.state.recipe.directions.split('\n')" :key="item">
-                  <td>{{ item }}</td>
+                <tr v-for="(item, index) in $store.state.recipe.directions.split('\n')" :key="item">
+                  <td>{{ index + 1 }}:</td><td>{{ item }}</td>
                 </tr>
               </tbody>
             </template>
@@ -790,6 +790,7 @@ export default {
       data.data.mealTime = this.mealTime
       data.data.ingredients = this.ingredients
       data.data.description = this.description
+      data.data.directions = this.directions
       data.data.notes = this.notes
       data.data.source = this.source
       data.data.visibility = this.visibility
