@@ -136,8 +136,8 @@
         <v-simple-table class="ml-4">
           <template v-slot:default>
             <tbody>
-              <tr v-for="item in $store.state.recipe.directions.split('\n')" :key="item">
-                <td>{{ item }}</td>
+              <tr v-for="(item, index) in $store.state.recipe.directions.split('\n')" :key="item">
+                <td>{{ index + 1 }}:</td><td>{{ item }}</td>
               </tr>
             </tbody>
           </template>
@@ -643,7 +643,7 @@
           <v-btn
             class="ma-2"
             color="error"
-            @click="cancleDeleteRecipe"
+            @click="startDeleteRecipeSubmit"
           >
             Delete
           </v-btn>
@@ -730,6 +730,11 @@ export default {
     },
     cancleDeleteRecipe () {
       this.deleteRecipeDialog = false
+    },
+    startDeleteRecipeSubmit () {
+      var data = {}
+      data.recipeId = this.$route.params.id
+      this.$store.dispatch('deleteRecipe', data)
     },
     deleteItem () {
       for(var i = 0; i < this.selected.length; i++) {

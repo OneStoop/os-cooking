@@ -489,6 +489,34 @@ const store = new Vuex.Store({
           commit('setLoading', false)
         })
     },
+    deleteRecipe ({ commit }, data) {
+      commit('setActionRecipeLoading', true)
+      var auth = { 'Content-Type': 'application/json', 'Authorization': store.state.token }
+      
+      var url = process.env.VUE_APP_API_SERVER + 'recipes'
+      if (data.recipeId !== null) {
+        url += '/' + data.recipeId
+      }
+      
+      console.log(data.recipeId)
+      
+      axios({
+        method: 'delete',
+        url: url,
+        data: data,
+        headers: auth
+      })
+      .then(function () {
+        console.log("done")
+        commit('setActionRecipeLoading', false)
+        commit('seteditRecipeDialog', false)
+        router.push({ name: 'myrecipes'})
+      })
+      .catch(function (error) {
+        console.log(error)
+        commit('setActionRecipeLoading', false)
+      })
+    },
     actionRecipe ({ commit }, data) {
       commit('setActionRecipeLoading', true)
       var auth = { 'Content-Type': 'application/json', 'Authorization': store.state.token }

@@ -9,7 +9,7 @@ const router = new VueRouter({
   mode: 'history',
   routes: [
     { path: '/', name: 'home', component: loadView('Home') },
-    { path: '/myrecipes', component: loadView('Myrecipes') },
+    { path: '/myrecipes', name: 'myrecipes', component: loadView('Myrecipes') },
     { path: '/profile/:id', component: loadView('Profile') },
     { path: '/recipe/:id', component: loadView('Recipe') },
     { path: '/recipe/:id/:title', name: 'recipe', component: loadView('Recipe') },
