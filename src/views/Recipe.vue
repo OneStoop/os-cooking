@@ -143,6 +143,30 @@
           </template>
         </v-simple-table>
       </v-row>
+      
+      <v-row>
+        <p class="title ml-4 mt-4">
+          Notes
+        </p>
+      </v-row>
+      
+      <v-row>
+        <p class="ml-4">
+        {{ $store.state.recipe.notes }}
+        </p>
+      </v-row>
+      
+      <v-row>
+        <p class="title ml-4 mt-4">
+          Source
+        </p>
+      </v-row>
+      
+      <v-row>
+        <p class="ml-4">
+        {{ $store.state.recipe.source }}
+        </p>
+      </v-row>
     </v-card>
     
     <!-- big display -->
@@ -256,6 +280,24 @@
               </tbody>
             </template>
           </v-simple-table>
+        </v-col>
+        
+        <v-col cols="8">
+          <p class="title">
+            Notes
+          </p>
+          <p>
+            {{ $store.state.recipe.notes }}
+          </p>
+        </v-col>
+        
+        <v-col cols="8">
+          <p class="title">
+            Source
+          </p>
+          <p>
+            {{ $store.state.recipe.source }}
+          </p>
         </v-col>
       </v-row>
     </v-card>
