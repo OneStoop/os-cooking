@@ -81,9 +81,9 @@
       <v-row align="center">
         <v-col cols="12">
         <v-card>
-          <div v-if="this.$store.state.recipe.images.length === 1">
+          <div v-if="this.$store.state.recipe.images.length > 0">
             <v-img
-              :src="this.$store.state.recipe.images[0].url"
+              :src="this.$store.state.recipe.images[0].image.url"
               lazy-src="https://storage.googleapis.com/onestoopimages01/NoImage.jpeg"
               height="300px"
               contain
@@ -194,9 +194,9 @@
       <v-row align="center" justify="center">
         <v-col cols="5">
           <v-card height="350px" class="pa-1">
-            <div v-if="this.$store.state.recipe.images.length === 1">
+            <div v-if="this.$store.state.recipe.images.length > 0">
                   <v-img
-                    :src="this.$store.state.recipe.images[0].url"
+                    :src="this.$store.state.recipe.images[0].image.url"
                     lazy-src="https://storage.googleapis.com/onestoopimages01/NoImage.jpeg"
                     height="300px"
                     contain
