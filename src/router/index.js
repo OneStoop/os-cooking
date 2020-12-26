@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VueMeta from 'vue-meta'
 import store from '../store'
 
 function loadView(view) {
@@ -22,7 +23,7 @@ const router = new VueRouter({
 })
 
 Vue.use(VueRouter)
-
+Vue.use(VueMeta)
 
 router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)) {

@@ -6,6 +6,12 @@
 
 <script>
 export default {
+  name: 'Home',
+  metaInfo: {
+      title: 'Recipes - One Stoop',
+      // override the parent template and just use the above title only
+      titleTemplate: null
+    },
   data () {
     return {
       breadcrumbs: [

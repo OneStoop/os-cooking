@@ -171,6 +171,13 @@
 
 <script>
 export default {
+  name: "Recipes - One Stoop",
+  metaInfo: {
+      // if no subcomponents specify a metaInfo.title, this title will be used
+      title: '',
+      // all titles will be injected into this template
+      titleTemplate: '%s | Recipes - One Stoop'
+  },
   data () {
     return {
       browse: false,
