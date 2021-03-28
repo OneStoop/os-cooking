@@ -138,7 +138,7 @@ const store = new Vuex.Store({
       state.recipesLoading = payload
     },
     setsearchModel (state, payload) {
-      state.searchModel = payload  
+      state.searchModel = payload
     },
     setToken (state, payload) {
       state.token = payload
@@ -162,7 +162,8 @@ const store = new Vuex.Store({
     setmyRecipesAdd (state, payload) {
       console.log(payload)
       state.myRecipes.moreResults = payload.moreResults
-      state.myRecipes.nextOffset = payload.nextOffset
+//       state.myRecipes.nextOffset = payload.nextOffset
+      state.myRecipes.nextId = payload.nextId
       for (var i=0; i < payload.recipes.length; i++) {
         state.myRecipes.recipes.splice(state.myRecipes.recipes.length, 0, payload.recipes[i])
       }
@@ -204,7 +205,7 @@ const store = new Vuex.Store({
         axios.get(process.env.VUE_APP_API_SERVER + 'recipes/' + recipeId, auth)
           .then(function (response) {
             commit('setRecipe', response.data.recipes[0])
-            
+
             axios.get(process.env.VUE_APP_API_SERVER + 'users?displayName=true&userId=' + response.data.recipes[0].authorId, auth)
             .then(function (response2) {
               commit('setRecipeAuthor', response2.data.user.displayName)
@@ -229,7 +230,7 @@ const store = new Vuex.Store({
         var auth = {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': store.state.token }
         }
-        
+
         var args = "?recipeId=" + recipeId + "&offset=" + offset + "&limit=" + limit
         console.log(args)
         axios.get(process.env.VUE_APP_API_SERVER + 'recipes/' + recipeId + "/reviews" + args, auth)
@@ -263,7 +264,7 @@ const store = new Vuex.Store({
       doGet(data["recipeId"], data["offset"], data["limit"], count)
     },
     addRecipes ({ commit }, query) {
-      
+
       commit('setaddrecipesLoading', true)
       var parmsObj = Object.entries(query)
       var parms = "?"
@@ -274,11 +275,11 @@ const store = new Vuex.Store({
         }
         parms += parmsObj[i][0] + "=" + parmsObj[i][1]
       }
-      
+
       var auth = {
         headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
       }
-      
+
       axios.get(process.env.VUE_APP_API_SERVER + 'recipes' + parms, auth)
         .then(response => {
           commit('setRecipesAdd', response.data)
@@ -302,7 +303,7 @@ const store = new Vuex.Store({
         }
         parms += parmsObj[i][0] + "=" + parmsObj[i][1]
       }
-      
+
       var auth = {
         headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
       }
@@ -321,7 +322,7 @@ const store = new Vuex.Store({
       var auth = {
         headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
       }
-      
+
       axios.post(process.env.VUE_APP_API_SERVER + 'recipes/' + data['recipeId'] + '/reviews', data, auth)
         .then(function (response) {
           commit('setReviewsAdd', response.data)
@@ -334,7 +335,7 @@ const store = new Vuex.Store({
         })
     },
     getRecipes ({ commit }, query) {
-      
+
       commit('setrecipesLoading', true)
       var parmsObj = Object.entries(query)
       var parms = "?"
@@ -345,11 +346,11 @@ const store = new Vuex.Store({
         }
         parms += parmsObj[i][0] + "=" + parmsObj[i][1]
       }
-      
+
       var auth = {
         headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
       }
-      
+
       axios.get(process.env.VUE_APP_API_SERVER + 'recipes' + parms, auth)
         .then(response => {
           commit('setRecipes', response.data)
@@ -370,12 +371,12 @@ const store = new Vuex.Store({
         }
         parms += parmsObj[i][0] + "=" + parmsObj[i][1]
       }
-      
+
       var auth = {
         headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
       }
-      
-      axios.get(process.env.VUE_APP_API_SERVER + 'recipes' + parms, auth)
+
+      axios.get(process.env.VUE_APP_API_SERVER + 'recipes/search' + parms, auth)
         .then(response => {
           commit('setRecipes', response.data)
           commit('setrecipesLoading', false)
@@ -389,7 +390,7 @@ const store = new Vuex.Store({
         var auth = {
           headers: { 'Content-Type': 'application/json', 'Authorization': store.state.token }
         }
-      
+
         axios.get(process.env.VUE_APP_API_SERVER + 'recipes?author=' + store.state.user.email, auth)
           .then(response => {
             console.log(response)
@@ -406,11 +407,11 @@ const store = new Vuex.Store({
             }
             else {
               commit('setmyRecipes', response.data)
-              commit('setrecipesLoading', false)  
+              commit('setrecipesLoading', false)
             }
           })
       }
-    
+
       commit('setrecipesLoading', true)
       var count = 0
       doGet(this, count)
@@ -492,14 +493,14 @@ const store = new Vuex.Store({
     deleteRecipe ({ commit }, data) {
       commit('setActionRecipeLoading', true)
       var auth = { 'Content-Type': 'application/json', 'Authorization': store.state.token }
-      
+
       var url = process.env.VUE_APP_API_SERVER + 'recipes'
       if (data.recipeId !== null) {
         url += '/' + data.recipeId
       }
-      
+
       console.log(data.recipeId)
-      
+
       axios({
         method: 'delete',
         url: url,
@@ -520,15 +521,15 @@ const store = new Vuex.Store({
     actionRecipe ({ commit }, data) {
       commit('setActionRecipeLoading', true)
       var auth = { 'Content-Type': 'application/json', 'Authorization': store.state.token }
-      
+
       var url = process.env.VUE_APP_API_SERVER + 'recipes'
       if (data.recipeId !== null) {
         url += '/' + data.recipeId
       }
-      
+
       console.log(data.action)
       console.log(data.recipeId)
-      
+
       axios({
         method: data.action,
         url: url,
@@ -592,9 +593,10 @@ const store = new Vuex.Store({
       }
       else
       {
-        var userId = state.profile._id.split("/")
+//         var userId = state.profile._id.split("/")
+        var userId = state.profile.uid
         var items = [
-          { title: "My Profile", to: "/profile/" + userId[1]},
+          { title: "My Profile", to: "/profile/" + userId},
           { title: "My Recipes", to: "/myrecipes"},
           { title: "Sign Out", to: "/signout"}
         ]

@@ -642,8 +642,8 @@ export default {
           if (this.$store.state.myRecipes.moreResults && this.$store.state.addrecipesLoading === false) {
             var newQuery = {}
             newQuery['limit'] = 10
-            newQuery['nextOffset'] = this.$store.state.myRecipes.nextOffset
             newQuery['author'] = this.$store.state.user.email
+            newQuery['nextId'] = this.$store.state.myRecipes.nextId
             this.$store.dispatch('addmyRecipes', newQuery)
           }
         }

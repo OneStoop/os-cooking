@@ -14,7 +14,7 @@
     >
       <form v-on:submit.prevent="goToSearch()">
         <v-text-field
-          label="Outlined"
+          label="Search"
           placeholder="Search recipes"
           v-model="search"
           outlined
@@ -113,7 +113,7 @@
 
       <form v-on:submit.prevent="goToSearch()">
         <v-text-field
-          label="Outlined"
+          label="Search"
           placeholder="Search recipes"
           v-model="search"
           outlined
@@ -200,7 +200,7 @@ export default {
     },
     goToSearch () {
       if (this.$store.state.searchModel != null) {
-        window.location.replace('/search?term=' + this.$store.state.searchModel)
+        window.location.replace('/search?q=' + this.$store.state.searchModel)
         this.$store.commit('setsearchModel', null)
       }
     }

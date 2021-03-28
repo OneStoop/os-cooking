@@ -31,7 +31,7 @@
         </div>
       </v-col>
     </v-row>
-    
+
     <v-row no-gutters v-if="this.$store.state.recipe.title === ''">
       <v-col cols="12">
         <v-skeleton-loader
@@ -77,7 +77,7 @@
       <v-row>
         <p v-if="this.$store.state.authorName" class="ml-6">By: {{ this.$store.state.authorName }}</p>
       </v-row>
-      
+
       <v-row align="center">
         <v-col cols="12">
         <v-card>
@@ -99,7 +99,7 @@
         </v-card>
         </v-col>
       </v-row>
-      
+
       <v-row align="center">
         <v-col cols="12">
         <v-card class="ma-4">
@@ -107,13 +107,13 @@
         </v-card>
         </v-col>
       </v-row>
-      
+
       <v-row>
         <p class="title ml-4">
           Ingredients
         </p>
       </v-row>
-        
+
       <v-row>
         <v-simple-table class="ml-4">
           <template v-slot:default>
@@ -131,7 +131,7 @@
           Directions
         </p>
       </v-row>
-      
+
       <v-row>
         <v-simple-table class="ml-4">
           <template v-slot:default>
@@ -143,32 +143,32 @@
           </template>
         </v-simple-table>
       </v-row>
-      
+
       <v-row>
         <p class="title ml-4 mt-4">
           Notes
         </p>
       </v-row>
-      
+
       <v-row>
         <p class="ml-4">
         {{ $store.state.recipe.notes }}
         </p>
       </v-row>
-      
+
       <v-row>
         <p class="title ml-4 mt-4">
           Source
         </p>
       </v-row>
-      
+
       <v-row>
         <p class="ml-4">
         {{ $store.state.recipe.source }}
         </p>
       </v-row>
     </v-card>
-    
+
     <!-- big display -->
     <v-card class="hidden-sm-and-down" v-if="this.$store.state.recipe.title != ''">
       <v-card-title class="display-1">
@@ -203,18 +203,18 @@
                 class="pl-2 ml-2"
               ></v-rating>
               <div class="grey--text ml-1">{{ this.$store.state.recipe.ratingCount }} Reviews</div>
-              
+
               <v-spacer></v-spacer>
-              
+
               <v-icon class="ml-4 mr-1">alarm</v-icon>Ready in {{ this.$store.state.recipe.prepTime + this.$store.state.recipe.cookTime }} Minutes
               <v-icon class="ml-4 mr-1">group</v-icon>Servings {{ this.$store.state.recipe.servings }}
-              
+
             </v-card-actions>
           </v-card>
           <v-divider></v-divider>
         </v-col>
       </v-row>
-      
+
       <v-row align="center" justify="center">
         <v-col cols="5">
           <v-card height="350px" class="pa-1">
@@ -249,13 +249,13 @@
           </v-card>
         </v-col>
       </v-row>
-      
+
       <v-row align="center" justify="center">
         <v-col cols="8">
           <p class="title">
             Ingredients
           </p>
-          
+
           <v-simple-table>
             <template v-slot:default>
               <tbody>
@@ -266,7 +266,7 @@
             </template>
           </v-simple-table>
         </v-col>
-      
+
         <v-col cols="8">
           <p class="title">
             Directions
@@ -281,7 +281,7 @@
             </template>
           </v-simple-table>
         </v-col>
-        
+
         <v-col cols="8">
           <p class="title">
             Notes
@@ -290,7 +290,7 @@
             {{ $store.state.recipe.notes }}
           </p>
         </v-col>
-        
+
         <v-col cols="8">
           <p class="title">
             Source
@@ -301,7 +301,7 @@
         </v-col>
       </v-row>
     </v-card>
-    
+
     <!-- all display -->
     <v-row align="center" justify="center" v-if="this.$store.state.recipe.title != ''">
       <v-col cols="12">
@@ -322,7 +322,7 @@
             <p class="text-center caption">
             {{ this.$store.state.recipe.ratingCount }} Reviews
             </p>
-            
+
             <div class="text-right" v-if="this.$store.getters.isNotAuthenticated">
               Login to review or ask question
             </div>
@@ -396,7 +396,7 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              
+
 <!--
               <v-btn
                 class="ma-2"
@@ -449,7 +449,7 @@
                       <div>
                         {{ review.location }}
                       </div>
-                    </v-card-text> 
+                    </v-card-text>
                   </v-card>
 
                   <v-pagination
@@ -471,7 +471,7 @@
     <v-snackbar :value="this.$store.getters.snackbar" :timeout="3000">
       {{ this.$store.getters.snackbarMessage }}
     </v-snackbar>
-    
+
     <v-dialog v-model="this.$store.state.editRecipeDialog" persistent max-width="800">
       <v-card>
         <v-card-title>
@@ -535,7 +535,7 @@
                 required>
               </v-select>
             </v-col>
-            
+
             <v-col cols="3">
               <v-select
                 label="Cuisine"
@@ -546,7 +546,7 @@
                 required>
               </v-select>
             </v-col>
-            
+
             <v-col cols="3">
               <v-select
                 label="Meal Time"
@@ -555,11 +555,11 @@
                 required>
               </v-select>
             </v-col>
-            
+
             <v-col cols="12">
               <div class="title">Ingredients <div class="font-weight-thin">(click to edit in column)</div></div>
             </v-col>
-            
+
             <v-col cols="12">
               <v-simple-table>
                 <template v-slot:default>
@@ -600,12 +600,12 @@
                  </template>
               </v-simple-table>
             </v-col>
-            
+
             <v-col cols="12">
               <v-btn @click="addIngredientLine()" class="ma-2"><v-icon left>add_box</v-icon>add ingredient line</v-btn>
               <v-btn color="red lighten-2" @click="deleteItem" class="ma-2">Delete</v-btn>
             </v-col>
-            
+
             <v-col cols="12">
               <v-textarea
                 label="Description"
@@ -614,7 +614,7 @@
                 required>
               </v-textarea>
             </v-col>
-            
+
              <v-col cols="12">
               <v-textarea
                 label="Directions"
@@ -623,7 +623,7 @@
                 required>
               </v-textarea>
             </v-col>
-            
+
             <v-col cols="12">
               <v-textarea
                 label="Notes (optional)"
@@ -631,7 +631,7 @@
                 v-model="notes">
               </v-textarea>
             </v-col>
-            
+
             <v-col cols="12">
               <v-text-field
                 label="Source (optional)"
@@ -639,7 +639,7 @@
                 v-model="source">
               </v-text-field>
             </v-col>
-            
+
             <v-col cols="3">
               <v-select
                 label="Visibility"
@@ -648,7 +648,7 @@
                 required>
               </v-select>
             </v-col>
-            
+
 
           </v-row>
         </v-card-text>
@@ -672,7 +672,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    
+
     <v-dialog v-model="this.deleteRecipeDialog" persistent max-width="800">
       <v-card>
         <v-card-title>
@@ -841,11 +841,11 @@ export default {
       data.data.notes = this.notes
       data.data.source = this.source
       data.data.visibility = this.visibility
-      
+
       data.recipeId = this.$route.params.id
       data.action = 'patch'
       console.log(data)
-      
+
       this.$store.dispatch('actionRecipe', data)
     },
     startReviewSubmit () {
@@ -893,7 +893,7 @@ export default {
   computed: {
     isOwner: function () {
       if (this.$store.state.profile != null) {
-        if (this.$store.state.recipe.authorId === this.$store.state.profile._id) {
+        if (this.$store.state.recipe.authorId === this.$store.state.profile.uid) {
           return true
         } else { return false }
       } else return false
@@ -949,12 +949,12 @@ export default {
     },
     reviewRating: function (val) {
       if (val != null) {
-        this.reviewRatingError = false   
+        this.reviewRatingError = false
       }
     },
     reviewDialogWatch: function (val) {
        if (val === false) {
-         this.cancleReview()   
+         this.cancleReview()
        }
     },
     reviewPage: function (val) {
@@ -981,7 +981,7 @@ export default {
         if ( (this.reviewPage * 5) > this.$store.state.reviews.total ) {
           console.log("short list")
           this.visableReviews = this.$store.state.reviews.reviews.slice((this.reviewPage - 1)* 5, this.$store.state.reviews.total)
-        } 
+        }
         else {
           console.log("full list")
           this.visableReviews = this.$store.state.reviews.reviews.slice((this.reviewPage - 1)* 5, this.reviewPage * 5)
@@ -996,6 +996,7 @@ export default {
     this.$store.commit('setReviews', null)
     this.autoRefreshToken()
     setTimeout(function () { vm.$store.dispatch('refreshToken') }, 3300000)
+    console.log(this.$route.params.id)
     this.$store.dispatch('getRecipe', this.$route.params.id)
     this.callgetReviews()
   },
