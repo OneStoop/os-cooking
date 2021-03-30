@@ -30,12 +30,12 @@
       <router-link :to="'/'" style="text-decoration: none;" class="mr-4">
         <v-icon>home</v-icon>
       </router-link>
-      
+
       <v-btn text small v-if="this.$store.getters.isNotAuthenticated" :to="'/signin/'">Sign In</v-btn>
       |
       <v-btn text small v-if="this.$store.getters.isNotAuthenticated" :to="'/signup/'">Sign Up</v-btn>
 
-      
+
       <v-menu bottom left v-if="this.$store.getters.isAuthenticated">
         <template v-slot:activator="{ on }">
           <v-btn
@@ -46,7 +46,7 @@
             <v-icon>account_circle</v-icon>
           </v-btn>
         </template>
-        
+
         <v-list>
           <v-list-item
             v-for="(item, i) in this.$store.getters.userMenuItems"
@@ -58,9 +58,9 @@
           </v-list-item>
         </v-list>
       </v-menu>
-    
+
     </v-app-bar>
-  
+
     <v-app-bar
       app
       color="cyan"
@@ -108,8 +108,8 @@
             </v-list-item-group>
           </v-list>
         </v-card>
-      </v-menu>      
-      
+      </v-menu>
+
 
       <form v-on:submit.prevent="goToSearch()">
         <v-text-field
@@ -140,7 +140,7 @@
             <v-icon>account_circle</v-icon>
           </v-btn>
         </template>
-        
+
         <v-list>
           <v-list-item
             v-for="(item, i) in this.$store.getters.userMenuItems"
@@ -160,18 +160,56 @@
 
     <v-footer
       color="cyan"
-      app
+      padless
     >
+      <v-row>
+        <v-col>
+
+<v-menu
+        offset-x
+        :nudge-width="200"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn
+            v-on="on"
+            class="ma-2 white--text"
+            text
+          >
+            Meal Types <v-icon>keyboard_arrow_down</v-icon>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-divider></v-divider>
+          <v-list shaped>
+            <v-list-item-group color="primary" v-model="browseItem">
+              <v-list-item
+                v-for="(item, i) in this.$store.state.recipeTypes.types"
+                :key="i"
+                :href="'/recipes?recipeType=' + item"
+              >
+                <v-list-item-content>
+                  <v-list-item-title v-text="item"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-card>
+      </v-menu>
+
+
+
+        </v-col>
+      </v-row>
       <v-spacer />
 
-      <span class="white--text">&copy; 2020</span>
+      <span class="white--text">&copy; 2021</span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
 export default {
-  name: "Recipes - One Stoop",
+  name: "Recipes-OneStoop",
   metaInfo: {
       // if no subcomponents specify a metaInfo.title, this title will be used
       title: '',
