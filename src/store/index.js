@@ -179,7 +179,7 @@ const store = new Vuex.Store({
   },
   actions: {
     autoSignIn ({ commit }, payload) {
-      commit('setUser', { email: payload.email })
+      commit('setUser', { email: payload.email, uid: payload.uid })
     },
     refreshToken ({ commit }) {
       console.log("refreshToken")
@@ -443,6 +443,7 @@ const store = new Vuex.Store({
           console.log(auth)
           axios.get(process.env.VUE_APP_API_SERVER + 'users?email=' + store.state.user.email, auth)
             .then(function (response) {
+              console.log(response.data)
               commit('setProfile', response.data)
             })
             .catch(function () {
@@ -466,14 +467,14 @@ const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
         .then(firebaseUser => {
-          commit('setUser', { email: firebaseUser.user.email })
+          commit('setUser', { email: firebaseUser.user.email, uid: firebaseUser.user.uid })
           commit('setLoading', false)
           commit('setToken', firebaseUser.user._lat)
           axios.post(process.env.VUE_APP_API_SERVER + `users?token=` + firebaseUser.user._lat + '&name=' + payload.name, {
             body: ''
           })
             // .then(response => {})
-            .then()
+            .then(router.push('/'))
             .catch(function() {
               var user = firebase.auth().currentUser
               user.delete().then(function () {
@@ -483,7 +484,6 @@ const store = new Vuex.Store({
               commit('setUser', null)
               router.push('/signup')
             })
-          router.push('/')
         })
         .catch(error => {
           commit('setError', error.message)
@@ -588,12 +588,15 @@ const store = new Vuex.Store({
       }
     },
     userMenuItems: state => {
+      console.log(state)
       if (state.user === null) {
         return []
       }
-      else
-      {
-//         var userId = state.profile._id.split("/")
+      else if (!('profile' in state.user)) {
+        return []
+      }
+      else if ('uid' in state.user.profile) {
+        //         var userId = state.profile._id.split("/")
         var userId = state.profile.uid
         var items = [
           { title: "My Profile", to: "/profile/" + userId},
@@ -601,6 +604,10 @@ const store = new Vuex.Store({
           { title: "Sign Out", to: "/signout"}
         ]
         return items
+      }
+      else
+      {
+        return []
       }
     },
     baseurl: state => {
