@@ -592,10 +592,7 @@ const store = new Vuex.Store({
       if (state.user === null) {
         return []
       }
-      else if (!('profile' in state.user)) {
-        return []
-      }
-      else if ('uid' in state.user.profile) {
+      else {
         //         var userId = state.profile._id.split("/")
         var userId = state.profile.uid
         var items = [
@@ -605,10 +602,7 @@ const store = new Vuex.Store({
         ]
         return items
       }
-      else
-      {
-        return []
-      }
+
     },
     baseurl: state => {
       return state.baseurl
