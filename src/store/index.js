@@ -419,41 +419,40 @@ const store = new Vuex.Store({
     userSignIn ({ commit }, payload) {
       commit('setLoading', true)
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(function () {
-          return firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-            .then(firebaseUser => {
-              console.log(firebaseUser)
-              commit('setUser', { email: firebaseUser.user.email, uid: firebaseUser.user.uid })
-              commit('setToken', firebaseUser.user._lat)
-              commit('setLoading', false)
-              commit('setError', null)
-              console.log('logged in, redirecting')
-              router.push('/')
-            })
+        .catch( error => {
+          console.log(error)
+          commit('setUser', null)
+        })
+        .then( data => {
+          console.log(data)
+          firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
             .catch(error => {
               commit('setError', error.message)
               commit('setLoading', false)
               firebase.auth().signOut()
               commit('setUser', null)
             })
-        }).then(function () {
-          var auth = {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': store.state.token }
-          }
-          console.log(auth)
-          axios.get(process.env.VUE_APP_API_SERVER + 'users?email=' + store.state.user.email, auth)
-            .then(function (response) {
-              console.log(response.data)
-              commit('setProfile', response.data)
+            .then(firebaseUser => {
+              commit('setToken', firebaseUser.user._lat)
+              var auth = {
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': store.state.token }
+              }
+              axios.get(process.env.VUE_APP_API_SERVER + 'users?email=' + firebaseUser.user.email, auth)
+                .catch( error => {
+                  console.log(error)
+                  firebase.auth().signOut()
+                  commit('setUser', null)
+                })
+                .then(response => {
+                  console.log(response.data)
+                  commit('setProfile', response.data)
+                  commit('setUser', { email: firebaseUser.user.email, uid: firebaseUser.user.uid })
+                  commit('setLoading', false)
+                  commit('setError', null)
+                  console.log('redirecting')
+                  router.push('/')
+                })
             })
-            .catch(function () {
-              firebase.auth().signOut()
-              commit('setUser', null)
-            })
-        })
-        .catch(function () {
-          // Handle Errors here.
-          commit('setUser', null)
         })
     },
     userSignOut ({ commit }) {
@@ -467,28 +466,27 @@ const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
         .then(firebaseUser => {
-          commit('setUser', { email: firebaseUser.user.email, uid: firebaseUser.user.uid })
           commit('setLoading', false)
-          commit('setToken', firebaseUser.user._lat)
-          axios.post(process.env.VUE_APP_API_SERVER + `users?token=` + firebaseUser.user._lat + '&name=' + payload.name, {
-            body: ''
-          })
-            // .then(response => {})
-            .then(router.push('/'))
-            .catch(function() {
+          console.log("doing POST")
+          axios.post(process.env.VUE_APP_API_SERVER + `users?token=` + firebaseUser.user._lat + '&name=' + payload.name, {body: ''})
+            .catch( () => {
               var user = firebase.auth().currentUser
               user.delete().then(function () {
                 // User deleted.
-              }).catch(function () {
               })
               commit('setUser', null)
               router.push('/signup')
             })
+            .then( () => {
+              store.dispatch('userSignIn', { email: payload.email, password: payload.password })
+            })
+
         })
         .catch(error => {
           commit('setError', error.message)
           commit('setLoading', false)
         })
+
     },
     deleteRecipe ({ commit }, data) {
       commit('setActionRecipeLoading', true)

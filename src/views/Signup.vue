@@ -16,17 +16,17 @@
         </v-btn>
       </v-col>
     </v-row>
-    
+
     <v-row>
       <v-col cols="4"></v-col>
       <v-col cols="" class="">
         <p class="">Sign up email</p>
       </v-col>
     </v-row>
-    
+
     <v-row>
       <v-col cols="4"></v-col>
-      <v-col cols="4">    
+      <v-col cols="4">
         <form @submit.prevent="userSignUp">
 
             <v-col>
@@ -52,7 +52,7 @@
               v-model="password"
               required>
             </v-text-field>
-            
+
             <v-text-field
               name="confirmPassword"
               label="Confirm Password"
@@ -63,7 +63,7 @@
               :rules="[comparePasswords]"
               >
             </v-text-field>
-            
+
             <v-text-field
               name="displayName"
               label="Display Name"

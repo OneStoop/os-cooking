@@ -16,7 +16,7 @@
         </v-btn>
       </v-col>
     </v-row>
-    
+
     <v-row>
       <v-col cols="4"></v-col>
       <v-col cols="" class="">
@@ -95,7 +95,6 @@ export default {
           var user = result.user
           console.log(result)
 
-          vm.$store.commit('setUser', { email: user.email })
           vm.$store.commit('setLoading', false)
           vm.$store.commit('setToken', token)
           axios.post(process.env.VUE_APP_API_SERVER + `users?token=` + token, {
@@ -105,9 +104,10 @@ export default {
             var auth = {
               headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': vm.$store.state.token }
             }
-            axios.get(process.env.VUE_APP_API_SERVER + 'users?email=' + vm.$store.state.user.email, auth)
+            axios.get(process.env.VUE_APP_API_SERVER + 'users?email=' + user.email, auth)
             .then(function (response) {
               vm.$store.commit('setProfile', response.data)
+              vm.$store.commit('setUser', { email: user.email })
             })
             .catch(function () {
               firebase.auth().signOut()
