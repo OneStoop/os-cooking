@@ -51,7 +51,7 @@
                 v-model="password"
                 required></v-text-field>
 
-              <v-btn color="cyan" type="submit">Sign In</v-btn>
+              <v-btn color="primary" type="submit">Sign In</v-btn>
         </form>
       </v-col>
     </v-row>

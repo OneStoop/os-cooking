@@ -8,7 +8,7 @@
 
     <v-app-bar
       app
-      color="cyan"
+      color="primary"
       dark
       class="hidden-md-and-up"
     >
@@ -63,64 +63,25 @@
 
     <v-app-bar
       app
-      color="cyan"
+      color="primary"
       dark
       class="hidden-sm-and-down"
     >
-      <v-btn :to="'/'" text>
-        <v-toolbar-title>
-          Recipes - One Stoop
-        </v-toolbar-title>
-      </v-btn>
-
-      <v-btn text v-if="this.$store.getters.isAuthenticated" :to="'/myrecipes'" class="ma-2">My Recipes</v-btn>
-      <v-btn text v-if="this.$store.getters.isNotAuthenticated" disabled class="ml-4 mr-4"></v-btn>
-      <v-menu
-        offset-x
-        :nudge-width="200"
+      <v-toolbar-title
+        style="width: 350px"
       >
-        <template v-slot:activator="{ on }">
-          <v-btn
-            v-on="on"
-            class="ma-2"
-            text
-          >
-            Browse <v-icon>keyboard_arrow_down</v-icon>
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>
-            Meal Type
-            <v-icon>chevron_right</v-icon>
-        </v-card-title>
-          <v-divider></v-divider>
-          <v-list shaped>
-            <v-list-item-group color="primary" v-model="browseItem">
-              <v-list-item
-                v-for="(item, i) in this.$store.state.recipeTypes.types"
-                :key="i"
-                :href="'/recipes?recipeType=' + item"
-              >
-                <v-list-item-content>
-                  <v-list-item-title v-text="item"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-card>
-      </v-menu>
-
+        <a href="/" class="white--text" style="text-decoration: none">Recipes . OS . com</a>
+      </v-toolbar-title>
 
       <form v-on:submit.prevent="goToSearch()">
         <v-text-field
-          label="Search"
-          placeholder="Search recipes"
-          v-model="search"
-          outlined
-          rounded
-          dense
-          single-line
-          class="mt-5"
+        flat
+        solo-inverted
+        hide-details
+        prepend-inner-icon="mdi-magnify"
+        label="Search"
+        v-model="search"
+        class="pl-10 ml-4"
         ></v-text-field>
       </form>
       <v-btn @click="goToSearch()" icon><v-icon>search</v-icon></v-btn>
@@ -153,13 +114,56 @@
         </v-list>
       </v-menu>
     </v-app-bar>
+    <v-main>
+      <v-bottom-navigation
+        :value="activeBtn"
+        color="primary"
+        horizontal
+      >
+        <a href="/" class="v-btn">
+          <span>Home</span>
+        </a>
+
+        <v-menu>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              text
+            >
+              Browse
+            </v-btn>
+          </template>
+          <v-card>
+            <v-divider></v-divider>
+            <v-list shaped>
+              <v-list-item-group color="primary" v-model="browseItem">
+                <v-list-item
+                  v-for="(item, i) in this.$store.state.recipeTypes.types"
+                  :key="i"
+                  :href="'/recipes?recipeType=' + item"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title v-text="item"></v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-card>
+        </v-menu>
+
+        <a :href="'/myrecipes'" class="v-btn" v-if="this.$store.getters.isAuthenticated">
+          <span>My Recipes</span>
+        </a>
+
+      </v-bottom-navigation>
+    </v-main>
 
     <v-main>
       <router-view></router-view>
     </v-main>
 
     <v-footer
-      color="cyan"
+      color="primary"
       padless
     >
       <v-row>
@@ -219,7 +223,8 @@ export default {
   data () {
     return {
       browse: false,
-      browseItem: null
+      browseItem: null,
+      activeBtn: 1
     }
   },
   computed: {

@@ -1,6 +1,7 @@
 <template>
   <v-container fluid>
-  Home
+
+
   </v-container>
 </template>
 
@@ -20,7 +21,8 @@ export default {
           disabled: false,
           href: '/',
         }
-      ]
+      ],
+      model: null
     }
   },
   methods: {

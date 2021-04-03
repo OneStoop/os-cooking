@@ -6,7 +6,7 @@
 <template>
   <v-container fluid>
   <v-card>
-    <v-toolbar flat color="cyan darken-2" dark>
+    <v-toolbar flat color="primary lighten-2" dark>
       <v-toolbar-title>My Recipes</v-toolbar-title>
     </v-toolbar>
     <v-tabs v-model="activeTab" icons-and-text>
@@ -34,7 +34,7 @@
                   :src="d.images[0].image.url"
                   lazy-src="https://storage.googleapis.com/onestoopimages01/NoImage.jpeg"
                   height="300px"
-                  
+
                 ></v-img>
               </div>
               <div v-if="d.images.length === 0">
@@ -45,7 +45,7 @@
               </div>
               </router-link>
               <v-card-title>{{ d.title }}</v-card-title>
-              
+
               <v-card-actions>
                 <v-rating
                   :value="d.rating"
@@ -103,7 +103,7 @@
                     required>
                   </v-text-field>
                 </v-col>
-                
+
                 <v-col cols="4">
                   <v-text-field
                     label="Prep Time minutes"
@@ -112,7 +112,7 @@
                     required>
                   </v-text-field>
                 </v-col>
-                
+
                 <v-col cols="4">
                   <v-text-field
                     label="Cook Time minutes"
@@ -121,7 +121,7 @@
                     required>
                   </v-text-field>
                 </v-col>
-                
+
                 <v-col cols="4">
                   <v-text-field
                     label="Servings"
@@ -130,7 +130,7 @@
                     required>
                   </v-text-field>
                 </v-col>
-                
+
                 <v-col cols="3">
                   <v-select
                     autocomplete
@@ -152,7 +152,7 @@
                     required>
                   </v-select>
                 </v-col>
-                
+
                 <v-col cols="3">
                   <v-select
                     label="Cuisine"
@@ -161,7 +161,7 @@
                     required>
                   </v-select>
                 </v-col>
-                
+
                 <v-col cols="3">
                   <v-select
                     label="Meal Time"
@@ -174,7 +174,7 @@
                 <v-col cols="12">
                   <div class="title">Ingredients <div class="font-weight-thin">(click to edit in column)</div></div>
                 </v-col>
-                 
+
                 <v-col cols="12">
                    <v-simple-table>
                      <template v-slot:default>
@@ -229,7 +229,7 @@
                     required>
                   </v-textarea>
                 </v-col>
-                
+
                  <v-col cols="12">
                   <v-textarea
                     label="Directions"
@@ -238,7 +238,7 @@
                     required>
                   </v-textarea>
                 </v-col>
-                
+
                 <v-col cols="12">
                   <v-textarea
                     label="Notes (optional)"
@@ -246,7 +246,7 @@
                     v-model="notes">
                   </v-textarea>
                 </v-col>
-                
+
                 <v-col cols="12">
                   <v-text-field
                     label="Source (optional)"
@@ -254,7 +254,7 @@
                     v-model="source">
                   </v-text-field>
                 </v-col>
-                
+
                 <v-col cols="3">
                   <v-select
                     label="Visibility"
@@ -263,10 +263,10 @@
                     required>
                   </v-select>
                 </v-col>
-                
+
                 <v-col cols="9">
 
-                
+
             <v-flex xs12>
               <v-card>
                 <input
@@ -311,14 +311,14 @@
 
             <v-flex xs12 align-center justify-space-between>
               <v-btn small @click="launchFilePicker()"><v-icon>insert_photo</v-icon>Add a photo</v-btn>
-            </v-flex>                
+            </v-flex>
 
-                
+
                 </v-col>
 
               <div class="text-center">
-              <v-btn color="cyan" class="ma-2" type="submit">Save</v-btn>
-              <v-btn color="cyan" class="ma-2" @click="canclePost">Cancle</v-btn>
+              <v-btn color="primary" class="ma-2" type="submit">Save</v-btn>
+              <v-btn color="primary" class="ma-2" @click="canclePost">Cancle</v-btn>
               </div>
           </v-row>
         </form>
@@ -485,7 +485,7 @@ export default {
       var auth = {
         headers: { 'Content-Type': 'application/json', 'Authorization': this.$store.state.token }
       }
-    
+
       axios.post(process.env.VUE_APP_API_SERVER + 'recipes', data, auth)
         .then(response => {
           console.log(response)
