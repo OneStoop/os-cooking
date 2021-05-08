@@ -168,40 +168,6 @@
     >
       <v-row>
         <v-col>
-
-<v-menu
-        offset-x
-        :nudge-width="200"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn
-            v-on="on"
-            class="ma-2 white--text"
-            text
-          >
-            Meal Types <v-icon>keyboard_arrow_down</v-icon>
-          </v-btn>
-        </template>
-        <v-card>
-          <v-divider></v-divider>
-          <v-list shaped>
-            <v-list-item-group color="primary" v-model="browseItem">
-              <v-list-item
-                v-for="(item, i) in this.$store.state.recipeTypes.types"
-                :key="i"
-                :href="'/recipes?recipeType=' + item"
-              >
-                <v-list-item-content>
-                  <v-list-item-title v-text="item"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-card>
-      </v-menu>
-
-
-
         </v-col>
       </v-row>
       <v-spacer />
